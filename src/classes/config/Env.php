@@ -38,8 +38,9 @@ class Env {
         }
         
         if (! array_key_exists($key, self::$config))
-            throw new \Exception("Key not found!");
+            throw new \InvalidArgumentException("Key not found!");
         
+        echo self::$config[$key];
         return filter_var(self::$config[$key], FILTER_SANITIZE_URL);
     }
 }

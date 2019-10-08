@@ -23,6 +23,9 @@
 |___ users
 |       (one folder for each user named after his id; this folder will store photos)
 |
+|___ tests
+|	(unit tests - use PhpUnit)
+|
 |___ vendor
 |       (composer libraries)
 |

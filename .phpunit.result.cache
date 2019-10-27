@@ -1,0 +1,1 @@
+C:37:"PHPUnit\Runner\DefaultTestResultCache":208:{a:2:{s:7:"defects";a:2:{s:30:"EnvTest::testCanReturnValidUrl";i:4;s:24:"EnvTest::testKeyNotFound";i:3;}s:5:"times";a:2:{s:30:"EnvTest::testCanReturnValidUrl";d:0.003;s:24:"EnvTest::testKeyNotFound";d:0.009;}}}

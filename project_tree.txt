@@ -13,8 +13,10 @@
 │   ├── imgs
 │   │   └── img.txt
 │   ├── index.php
-│   └── js
-│       └── index.js
+│   ├── js
+│   │   └── index.js
+│   └── users
+│       └── usersImgFolders.txt
 ├── README.md
 ├── src
 │   └── classes
@@ -24,8 +26,6 @@
 │   └── platesTemplatesHere.txt
 ├── tests
 │   └── EnvTest.php
-├── testsHowTo.txt
-└── users
-    └── usersImgFolders.txt
+└── testsHowTo.txt
 
 11 directories, 17 files

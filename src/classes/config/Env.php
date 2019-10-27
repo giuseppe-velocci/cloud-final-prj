@@ -34,7 +34,7 @@ class Env {
         try {
             self::$config = self::$config ?? self::parseEnv($basepath . '/' . self::$envFile);
         } catch (\Error $e) {
-            print_r($e->getTrace());
+            // print_r($e->getTrace());
             die($e->getMessage());
         }
         

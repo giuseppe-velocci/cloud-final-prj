@@ -1,5 +1,6 @@
 After installation of PhpUnit, store all the test file (one for each class to be tested)inside ./tests folder.
+(If issues arise, it may be due to missing extensions for php)
 
 Then, to exectute all tests, run this commend from a cmd line pointing to the root directory:
 
-./vendor/bin/phpunit --bootstrap ./vendor/autoload.php tests
+$ vendor/bin/phpunit

@@ -1,42 +1,31 @@
-|___ css
-|        (css files)
-|
-|___ dbseed
-|       (scripts used to insert test data inside the db)
-|
-|___ imgs
-|       (image files for the website pages)
-|
-|___ js
-|       (js scripts)
-|
-|___ src
-|   |   (php scripts)
-|   |
-|   |___ classes
-|           (php classes: one folder for each class/family of classes.
-|              All subfolders names MUST be lowercase.
-|              The resulting namespace will be App\Subfolder in camelcase)
-|___ templates
-|       (php plates template files)
-|
-|___ users
-|       (one folder for each user named after his id; this folder will store photos)
-|
-|___ tests
-|	(unit tests - use PhpUnit)
-|
-|___ vendor
-|       (composer libraries)
-|
-|___ .gitignore
-|       (git file with patterns to be ignored for storage in repo)
-|
-|___ composer.json
-|       (add your dependecies here only when needed, otherwise let composer handle it)
-|
-|___ config.template.env 
-|       (blueprint for environment varaibles files. A config.env MUST be created before startup)
-|
-|___ index.php
-        (project entry page.)
+.
+├── composer.json
+├── composer.lock
+├── config.template.env
+├── dbseed
+│   └── dbseed.txt
+├── phpunit.xml
+├── phpunit.xml.save
+├── project_tree.txt
+├── public
+│   ├── css
+│   │   └── style.css
+│   ├── imgs
+│   │   └── img.txt
+│   ├── index.php
+│   └── js
+│       └── index.js
+├── README.md
+├── src
+│   └── classes
+│       └── config
+│           └── Env.php
+├── templates
+│   └── platesTemplatesHere.txt
+├── tests
+│   └── EnvTest.php
+├── testsHowTo.txt
+└── users
+    └── usersImgFolders.txt
+
+11 directories, 17 files

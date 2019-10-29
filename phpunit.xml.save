@@ -1,0 +1,1 @@
+<phpunit><testsuites><testsuitename="Test automatici"><directory>./test</directory></testsuite></testsuites><filter><whitelistprocessuncoveredfilesfromwhitelist="true"><directorysuffix=".p

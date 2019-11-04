@@ -1,6 +1,10 @@
 <?php
 chdir(dirname(__DIR__));
-require "vendor/autoload.php";
+
+echo __DIR__ . '<br/>';
+var_dump($_SERVER);
+
+require "./vendor/autoload.php";
 
 use App\Config\Env;
 
@@ -9,3 +13,4 @@ try{
 } catch(\Exception $e) {
     die($e->getMessage());
 }
+echo 'HOME';

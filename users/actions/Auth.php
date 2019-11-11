@@ -8,6 +8,9 @@ chdir(dirname($mainFolder));
 
 require "./vendor/autoload.php";
 
+//.. se c `e un token valido di condivisione: autorizza accesso
+
+
 function isValidUser () : bool {
     //.. logic to check login validity
 

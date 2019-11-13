@@ -13,11 +13,16 @@ class Upload {
     protected $validTypes = ['image/gif;', 'image/jpeg;', 'image/png;'];
     
 
+    /**
+     * @$uploadDir string = folder name starting from project folder (1 level above public folder)
+     */
     public function __construct(string $uploadDir) {
         $this->uploadDir = dirname(__DIR__, 3) . $uploadDir;
     }
 
-
+    /**
+     * @return bool = wheather filename is valid (utf-8 + maxlen)
+     */
     protected function isValidFilename(string $name) : bool {
         if (strlen($name) > self::MAX_FILENAME_LEN)
             return false;
@@ -28,7 +33,9 @@ class Upload {
         return true;
     }
 
-
+    /**
+     * @return bool = wheather file type is included in valid type array
+     */
     protected function isValidFile(): bool {
         $finfo = new \finfo(FILEINFO_MIME);
         $type = $finfo->file($_FILES[self::UPLOAD_INPUT_NAME]['tmp_name']);
@@ -46,8 +53,10 @@ class Upload {
         return true;
     }
 
-
-    public function upload():void {
+    /**
+     * @return string $uploadedFilename = full path of uploaded file
+     */
+    public function upload():string {
         if (! isset($_FILES[self::UPLOAD_INPUT_NAME]['error'])) {
             throw new UploadException(UploadException::EMPTY_FILE);
         }
@@ -67,12 +76,16 @@ class Upload {
             throw new UploadException(UploadException::EMPTY_FILE);
         }    
 
+        $uploadadFilename = $this->uploadDir . 
+            basename(filter_var($_FILES[self::UPLOAD_INPUT_NAME]['name'], FILTER_SANITIZE_URL));
         if (! move_uploaded_file(
             $_FILES[self::UPLOAD_INPUT_NAME]['tmp_name'], 
-            $this->uploadDir . $_FILES[self::UPLOAD_INPUT_NAME]['name']
+            $uploadadFilename
         )) {
             throw new UploadException();
         }
+
+        return $uploadadFilename;
     }
 
 }

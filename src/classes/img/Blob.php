@@ -8,18 +8,18 @@ use MicrosoftAzure\Storage\Blob\BlobRestProxy;
 use MicrosoftAzure\Storage\Common\Exceptions\ServiceException;
 use MicrosoftAzure\Storage\Common\Exceptions\InvalidArgumentTypeException;
 
-class BlobUpload {
+class Blob {
     protected $connectionString;
     protected $containerName;
 
     // 
-    public function __construct() {
+    public function __construct(string $containerName) {
         $this->connectionString = "DefaultEndpointsProtocol=https;AccountName=" .
             Env::get('AZURE_BLOB_USER') .
             ";AccountKey=".
             Env::get('AZURE_BLOB_KEY');
         
-        $this->containerName = Env::get('AZURE_CONTAINER');
+        $this->containerName = $containerName; //Env::get('AZURE_CONTAINER');
     }
 
 
@@ -40,5 +40,4 @@ class BlobUpload {
             throw $e;
         }
     }
-
 }

@@ -11,7 +11,7 @@ final class UploadTest extends TestCase
     protected static $tmpUserFolder = '/users/usrtest';
     protected static $imgPath = '/users/imgtst.jpg';
     protected static $imgUploadedPath = '/users/usrtest/imgtst.jpg';
-    protected static $wrongFile = '/users/wrong.txt';
+    protected static $wrongFile = '/users/usrtest/wrong.txt';
     
     protected static $upd;
 
@@ -23,7 +23,7 @@ final class UploadTest extends TestCase
         self::$wrongFile = dirname(__DIR__) . self::$wrongFile;
         self::$imgPath = dirname(__DIR__) . self::$imgPath;
         
-        (file_exists(self::$tmpUserFolder) ? : mkdir(self::$tmpUserFolder));
+        (file_exists(self::$tmpUserFolder) ? : mkdir(self::$tmpUserFolder, 0755));
 
         if (! file_exists(self::$imgPath)) { 
             $im = @imagecreatetruecolor(20, 20) or die('Cannot Initialize new GD image stream');
@@ -49,7 +49,7 @@ final class UploadTest extends TestCase
             unlink(self::$wrongFile);
 
         rmdir(self::$tmpUserFolder);
-    }
+     }
 
 
     // Tests
@@ -75,6 +75,7 @@ final class UploadTest extends TestCase
         self::$upd->upload(); 
     }
     
+    // not working... it did earlier...
     public function testWrongImgTypeUploadErrorThrowing() : void {
         $_FILES[Upload::UPLOAD_INPUT_NAME]['tmp_name'] = self::$wrongFile;
         $_FILES[Upload::UPLOAD_INPUT_NAME]['error'] = UPLOAD_ERR_OK;

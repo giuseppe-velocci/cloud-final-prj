@@ -20,7 +20,7 @@ class Env {
         foreach ($arr AS $c) {
             $c = trim($c);
             if (substr($c, 0, 1) != "#" && strlen($c) > 0) {
-                $data = explode("=", $c);
+                $data = explode(" ", $c);
                 $config[trim($data[0])] = trim($data[1]);                
             }
         }

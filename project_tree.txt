@@ -1,31 +1,15 @@
 .
-├── composer.json
-├── composer.lock
-├── config.template.env
 ├── dbseed
-│   └── dbseed.txt
-├── phpunit.xml
-├── phpunit.xml.save
-├── project_tree.txt
 ├── public
 │   ├── css
-│   │   └── style.css
 │   ├── imgs
-│   │   └── img.txt
-│   ├── index.php
-│   ├── js
-│   │   └── index.js
-│   └── users
-│       └── usersImgFolders.txt
-├── README.md
+│   └── js
 ├── src
 │   └── classes
 │       └── config
-│           └── Env.php
 ├── templates
-│   └── platesTemplatesHere.txt
 ├── tests
-│   └── EnvTest.php
-└── testsHowTo.txt
-
-11 directories, 17 files
+├── users
+│   ├── actions
+│   └── usr1
+└── vendor

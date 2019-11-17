@@ -6,10 +6,12 @@
 │   └── js
 ├── src
 │   └── classes
-│       └── config
+│       ├── config
+│       ├── db
+│       └── img
 ├── templates
 ├── tests
 ├── users
-│   ├── actions
-│   └── usr1
 └── vendor
+
+14 directories

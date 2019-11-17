@@ -23,6 +23,8 @@ final class UploadTest extends TestCase
         self::$wrongFile = dirname(__DIR__) . self::$wrongFile;
         self::$imgPath = dirname(__DIR__) . self::$imgPath;
         
+        $_FILES[Upload::UPLOAD_INPUT_NAME]['name'] = self::$imgPath;
+
         (file_exists(self::$tmpUserFolder) ? : mkdir(self::$tmpUserFolder, 0755));
 
         if (! file_exists(self::$imgPath)) { 
@@ -49,7 +51,7 @@ final class UploadTest extends TestCase
             unlink(self::$wrongFile);
 
         rmdir(self::$tmpUserFolder);
-     }
+      }
 
 
     // Tests
@@ -57,22 +59,24 @@ final class UploadTest extends TestCase
     public function testMissingErrorFieldInFILES(): void
     {
         self::expectExceptionCode(UploadException::EMPTY_FILE);
-        self::$upd->upload();
+        self::$upd->uploadImg();
     }
 
 
     public function testDefaultUploadErrorThrowing() : void {
         $_FILES[Upload::UPLOAD_INPUT_NAME]['error'] = UploadException::INVALID_FILE;
         self::expectExceptionCode(UploadException::INVALID_FILE);
-        self::$upd->upload();
+        self::$upd->uploadImg();
     }
 
+    // not working..
     public function testInvalidFilenameUploadErrorThrowing() : void {
-        $_FILES[Upload::UPLOAD_INPUT_NAME]['tmp_name'] = str_repeat('a', Upload::MAX_FILENAME_LEN +1) ;
+        $_FILES[Upload::UPLOAD_INPUT_NAME]['tmp_name'] = 
+            str_repeat('a', App\Img\ImgValidator::MAX_FILENAME_LEN +1) ;
         $_FILES[Upload::UPLOAD_INPUT_NAME]['error'] = UPLOAD_ERR_OK;
-        
+  
         self::expectExceptionCode(UploadException::INVALID_FILENAME);
-        self::$upd->upload(); 
+        self::$upd->uploadImg(); 
     }
     
     // not working... it did earlier...
@@ -81,7 +85,7 @@ final class UploadTest extends TestCase
         $_FILES[Upload::UPLOAD_INPUT_NAME]['error'] = UPLOAD_ERR_OK;
         
         self::expectExceptionCode(UploadException::INVALID_FILE);
-        self::$upd->upload(); 
+        self::$upd->uploadImg(); 
     }
 
     /*
@@ -92,7 +96,7 @@ final class UploadTest extends TestCase
         $_FILES[Upload::UPLOAD_INPUT_NAME]['tmp_name'] = self::$imgPath;
         $_FILES[Upload::UPLOAD_INPUT_NAME]['name'] = self::$imgUploadedPath;
 
-        self::$upd->upload();
+        self::$upd->uploadImg();
     }
     */
 }

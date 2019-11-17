@@ -6,8 +6,8 @@ namespace App\Img;
 class UploadException extends \Exception
 {
     const EMPTY_FILE = 9;
-    const INVALID_FILE = 10;
-    const INVALID_FILENAME = 11;
+    const INVALID_FILENAME = 10;
+    const INVALID_FILE = 11;
 
     public function __construct(int $code=0) {
         $message = $this->codeToMessage($code);
@@ -42,12 +42,12 @@ class UploadException extends \Exception
             case UploadException::EMPTY_FILE:
                 $message = "Empty or non existing file uploaded";
                 break;
+            case UploadException::INVALID_FILENAME:
+                $message = "File name too long or with invalid characters";
+                break;    
             case UploadException::INVALID_FILE:
                 $message = "Unsupported file type";
                 break; 
-            case UploadException::INVALID_FILENAME:
-                $message = "File name too long or with invalid characters";
-                break;
 
             default:
                 $message = "Unknown upload error";

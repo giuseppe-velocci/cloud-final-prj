@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Img;
 
 class ImgValidator {
-    const MAX_FILENAME_LEN = 250;
+    const MAX_FILENAME_LEN = 128;
     protected $validTypes;
 
 
@@ -16,9 +16,15 @@ class ImgValidator {
      * @return bool = wheather filename is valid (utf-8 + maxlen)
      */
     public function isValidFilename(string $name) : bool {
-        if (strlen($name) > self::MAX_FILENAME_LEN)
+        if (strlen($name) < 1)
             return false;
-        
+
+        if (strlen(basename($name)) > self::MAX_FILENAME_LEN)
+            return false;
+
+        if (! ctype_alnum(basename($name)[0]))
+            return false;
+
         if (mb_detect_encoding($name, 'UTF-8') === false)
             return false;
         
@@ -33,14 +39,17 @@ class ImgValidator {
         $finfo = new \finfo(FILEINFO_MIME);
         $type = $finfo->file($filepath);
 
-        preg_match("/image\/.*;/", $type, $res);
+        preg_match('/image\/\w+/', trim($type), $res);
 
         if (is_array($res))
             if (count($res) > 0)
                 $res = $res[0];
 
+        $fileExtension = pathinfo($filepath, PATHINFO_EXTENSION);
+        $fileExtension = $fileExtension == 'jpg' ? 'jpeg' : $fileExtension;
+
         if (! in_array($res, $this->validTypes) 
-            || strpos($type, pathinfo($filepath, PATHINFO_EXTENSION)) === false)
+            || strpos($res, $fileExtension) === false)
         {
             return false;
         }

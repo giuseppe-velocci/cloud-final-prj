@@ -20,7 +20,7 @@ class Env {
         foreach ($arr AS $c) {
             $c = trim($c);
             if (substr($c, 0, 1) != "#" && strlen($c) > 0) {
-                $data = explode(" ", $c);
+                $data = explode(" ", preg_replace("/\s+/", ' ', $c));
                 $config[trim($data[0])] = trim($data[1]);                
             }
         }
@@ -34,14 +34,12 @@ class Env {
         try {
             self::$config = self::$config ?? self::parseEnv($basepath . '/' . self::$envFile);
         } catch (\Error $e) {
-            // print_r($e->getTrace());
             die($e->getMessage());
         }
         
         if (! array_key_exists($key, self::$config))
             throw new \InvalidArgumentException("Key not found!");
         
-        echo self::$config[$key];
         return filter_var(self::$config[$key], FILTER_SANITIZE_URL);
     }
 }

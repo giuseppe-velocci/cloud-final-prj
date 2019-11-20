@@ -6,31 +6,53 @@ namespace App\Db;
 use App\Config\Env;
 
 class MongoConnection {
+    // format = "mongodb://localhost:27017"
     // format = "mongodb://alex:mypassword@10.111.0.2:27017/"
-    private $connection;
+    private $connectionString;
 
-    public function __construct() {
-        $connectionString = 'mongodb://' . 
-        Env::get('DB_USER') . ':' . Env::get('DB_PASSWORD')
-        . '@' . preg_replace('/http(s?):\/\//', '', Env::get('DB_HOST'));
+    /**
+     * 
+     */
+    public function __construct(?string $user=null, ?string $pwd=null) {
+        try {
+            $user = is_null($user) ? Env::get('DB_USER') : $user;
+            $pwd  = is_null($pwd)  ? Env::get('DB_PWD') : $pwd;
+            $host = Env::get('DB_HOST');
+        } catch (\MongoDB\Driver\Exception\InvalidArgumentException $e) {
+            die($e->getMessage());
+        } catch ( \MongoDB\Driver\Exception\RuntimeException $e) {
+            die($e->getMessage());
+        }
 
-        // connect to a host at a given port 
-        $this->connection = new MongoDB\Driver\Manager($connectionString);
+        $connectionString = "mongodb://";
+        if (strlen($user) > 0 && strlen($pwd) > 0)
+            $connectionString .= $user . ':' . $pwd. '@';
+        $connectionString .= preg_replace('/http(s?):\/\//', '', $host);
+
+        $this->connectionString = $connectionString;
     }
 
-// var_dump($connection);
-
-
-    public function setCurrentCollection(string $db, string $collection) : MongoDB\Driver\Manager {
-        $dbLink;
+    public function setCurrentDb(string $db) : \MongoDB\Driver\Manager {
         try {
-            $dbLink = $this->connection->$db->$collection;
-        } catch (MongoDB\Driver\Exception\ConnectionException $e) { // check exception type
+            $connection = new \MongoDB\Driver\Manager($this->connectionString);
+            $dbLink = $connection->$db;
+        } catch (\MongoDB\Driver\Exception\ConnectionException $e) { // check exception type
             throw $e;
         }
         return $dbLink;
     }
 
+    public function setCurrentCollection(string $db, string $collection) : \MongoDB\Driver\Manager {
+        try {
+            $connection = new \MongoDB\Driver\Manager($this->connectionString);
+            $dbLink = $connection->$db->$collection;
+        } catch (\MongoDB\Driver\Exception\ConnectionException $e) { // check exception type
+            throw $e;
+        }
+        return $dbLink;
+    }
+
+    // https://stackoverflow.com/questions/53019846/undefined-property-mongodb-driver-managerdb
 
 /*
 // Manager Class

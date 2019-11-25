@@ -9,9 +9,6 @@
     "autoload": {
         "psr-4": {
             "App\\": "src/classes/",
-            "App\\Config\\": "src/classes/config/",
-            "App\\Img\\": "src/classes/img/",
-            "App\\Db\\": "src/classes/db",
             "ImgAuth\\": "users/actions/"
         }
     },

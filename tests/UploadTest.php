@@ -40,7 +40,7 @@ final class UploadTest extends TestCase
 
 
     public static function tearDownAfterClass(): void
-    {   
+    {
         if (file_exists(self::$imgPath)){
             unlink(self::$imgPath);
         } elseif (file_exists(self::$tmpUserFolder. '/' . basename(self::$imgPath))) {

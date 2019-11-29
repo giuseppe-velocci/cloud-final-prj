@@ -14,11 +14,14 @@ class Blob {
 
     // 
     public function __construct(string $containerName) {
-        $this->connectionString = "DefaultEndpointsProtocol=https;AccountName=" .
-            Env::get('AZURE_BLOB_USER') .
-            ";AccountKey=".
-            Env::get('AZURE_BLOB_KEY');
-        
+        try {
+            $this->connectionString = "DefaultEndpointsProtocol=https;AccountName=" .
+                Env::get('AZURE_BLOB_ACCOUNT') .
+                ";AccountKey=".
+                Env::get('AZURE_BLOB_KEY');
+        } catch (InvalidArgumentTypeException $e){
+            die($e->getMessage());
+        }
         $this->containerName = $containerName; //Env::get('AZURE_CONTAINER');
     }
 
@@ -35,9 +38,11 @@ class Blob {
 
         //Upload blob
         try {
-            $blobClient->createBlockBlob($this->containerName, $fileToUpload, $content);
+            $blobClient->createBlockBlob($this->containerName, basename($fileToUpload), $content);
         } catch(ServiceException $e) {
             throw $e;
+        } finally {
+            fclose($content);
         }
     }
 }

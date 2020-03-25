@@ -1,12 +1,11 @@
 <?php
 declare(strict_types=1);
 
-require "./vendor/autoload.php";
+require "../vendor/autoload.php";
 
-// -> "mongodb://localhost:27017"
-// $driver = new MongoConnection('','');
 use App\Db\MongoConnection;
 use App\Config\Env;
+
 
 /**
  * Script that will setup json files files that will be imported in mongo via
@@ -32,6 +31,9 @@ use App\Config\Env;
 $importCmd = 'mongoimport --db {$db} --collection {$collection} --file {$file} --jsonArray';
 try {
     $db = Env::get('DB_NAME');
+    // -> "mongodb://localhost:27017"
+    $driver = new MongoConnection('','');
+
 } catch (\InvalidArgumentException $e) {
     die($e->getMessage());
 }
@@ -44,12 +46,14 @@ try {
  * @$cmd = string
  * @return = cmd output
  */
-function cmdExec(string $cmd) : string {
-    $output = shell_exec($cmd);
-    if (is_null($output)) {
-        throw \Error("Cmd failed: $cmd");
+function cmdExec(string $cmd) : int {
+    // $output = shell_exec($cmd);
+    exec($cmd, $output, $returnVal);
+var_dump($returnVal);
+    if ($returnVal > 0) {
+        throw new \Error("Cmd failed: $cmd");
     }
-    return $output;
+    return $returnVal;
 }
 
 /**
@@ -60,8 +64,9 @@ function cmdExec(string $cmd) : string {
 function array2json(array $data): string {
     $json = '[';
     foreach ($data AS $d) {
-        $json .= json_encode($d->toArray());
+        $json .= json_encode($d->toArray()) . ',';
     }
+    $json = substr($json, 0, -1);
     $json .= ']';
     return $json;
 }
@@ -73,12 +78,12 @@ function array2json(array $data): string {
  * @return = bool
  */
 function data2file(string $filename, string $data): bool {
-    $filename = __DIR__ . $filename;
+    $filename = __DIR__ . "/$filename";
     if (file_exists($filename)) {
         return false;
     }
 
-    $file = fopen($filename, 'r');
+    $file = fopen($filename, 'w');
     if (! $file) {
         throw new \Error('Cannot open file @' . __FILE__);
     }
@@ -109,19 +114,29 @@ foreach ($scripts AS $s) {
     echo "\nRunning script: $s\n";
     $seeder = require $s;
 
-    $importCmd = str_replace('{$db}', $seeder['db'], $importCmd);
-    $importCmd = str_replace('{$collection}', $seeder['collection'], $importCmd);
-    $importCmd = str_replace('{$file}', $seeder['file'], $importCmd);
+    $localImportCmd = $importCmd;
+    $localImportCmd = str_replace('{$db}', $seeder['db'], $localImportCmd);
+    $localImportCmd = str_replace('{$collection}', $seeder['collection'], $localImportCmd);
+    $localImportCmd = str_replace('{$file}', $seeder['file'], $localImportCmd);
+
+    echo "\nExecuting: $localImportCmd\n";
 
     data2file($seeder['file'], array2json($seeder['data']));
 
-//    echo cmdExec($importCmd) . "\n";
+    echo "\nAwaiting connection...\n";
 
-    /*
+    
     try {
-        $driver->setCurrentDb($db);
+        $driver->getConnection();
+        cmdExec($localImportCmd) . "\n";
+
+        echo 'Complete json import';
+        if (!unlink($seeder['file'])) {
+            echo "\nJson file deletion for ".$seeder['file']." failed!\n";
+        }
+
     } catch (\MongoDB\Driver\Exception\ConnectionException $e) {
         echo $e->getMessage();
         die("\n fatal error");
-    }*/
+    }
 }

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use App\Db\ImagesDb;
+use App\Config\Env;
 
 try {
     $db = Env::get('DB_NAME');

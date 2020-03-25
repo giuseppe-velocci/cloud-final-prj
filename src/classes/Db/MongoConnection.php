@@ -32,14 +32,32 @@ class MongoConnection {
         $this->connectionString = $connectionString;
     }
 
-    public function setCurrentDb(string $db) : \MongoDB\Driver\Manager {
+    public function getConnection() : \MongoDB\Driver\Manager {
         try {
+            echo $this->connectionString."\n";
             $connection = new \MongoDB\Driver\Manager($this->connectionString);
-            $dbLink = $connection->$db;
+var_dump($connection);
         } catch (\MongoDB\Driver\Exception\ConnectionException $e) { // check exception type
             throw $e;
         }
-        return $dbLink;
+        return $connection;
+    }
+
+
+    /*
+    public function setCurrentDb(string $db) : \MongoDB\Driver\Manager {
+        try {
+            // create db with a use cmd
+//            new \MongoDB\Driver\Command(['use ' + $db]);
+echo $this->connectionString."\n";
+
+            $connection = new \MongoDB\Driver\Manager($this->connectionString);
+var_dump($connection);
+//            $dbLink = $connection->$db;
+        } catch (\MongoDB\Driver\Exception\ConnectionException $e) { // check exception type
+            throw $e;
+        }
+        return $connection; //$dbLink;
     }
 
     public function setCurrentCollection(string $db, string $collection) : \MongoDB\Driver\Manager {
@@ -51,7 +69,7 @@ class MongoConnection {
         }
         return $dbLink;
     }
-
+ */
     // https://stackoverflow.com/questions/53019846/undefined-property-mongodb-driver-managerdb
 
 /*

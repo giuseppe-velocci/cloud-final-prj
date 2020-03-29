@@ -47,6 +47,7 @@ if(isset($jwt)){
             "message" => "Access denied.",
             "error" => $e->getMessage()
         ));
+    }
 }
 else{
  

@@ -1,17 +1,22 @@
 .
+├── config
 ├── dbseed
 ├── public
 │   ├── css
 │   ├── imgs
 │   └── js
 ├── src
-│   └── classes
-│       ├── config
-│       ├── db
-│       └── img
+│   ├── Api
+│   │   ├── Login
+│   │   └── Registration
+│   ├── Config
+│   ├── Controller
+│   │   ├── Errors
+│   │   └── Views
+│   ├── Db
+│   └── Img
 ├── templates
+│   ├── Common
+│   └── Errors
 ├── tests
-├── users
-└── vendor
-
-14 directories
+└── users

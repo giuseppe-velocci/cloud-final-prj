@@ -5,7 +5,7 @@ namespace App\Config;
 
 class Env {
     protected static $basepath;
-    protected static $envFile = "config.env";
+    protected static $envFile = "/config/config.env";
 
     protected static $config;
    
@@ -30,7 +30,7 @@ class Env {
 
 
     public static function get(string $key): string {
-        $basepath = $basepath ?? dirname(__DIR__, 3);
+        $basepath = $basepath ?? dirname(__DIR__, 2);
         try {
             self::$config = self::$config ?? self::parseEnv($basepath . '/' . self::$envFile);
         } catch (\Error $e) {

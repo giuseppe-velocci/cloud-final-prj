@@ -1,6 +1,10 @@
 <!-- links -->
 <?php foreach($buttons AS $text => $url): ?>
-    <a style="display:inline-block;" href="<?= $this->e($url) ?>"><button><?= $this->e($text) ?></button></a>
+    <a style="display:inline-block;" href="<?= $this->e($url) ?>">
+        <button>
+            <?= $this->e($text) ?>
+        </button>
+    </a>
 <?php endforeach; ?>
 
 
@@ -8,16 +12,20 @@
 <?php 
 $action = is_null($user) ? 'Login' : 'Logout';
 ?>
-<form style="display:inline-block; margin-left:3em;" action="/<?= strtolower($action) ?>" method="POST">
-    <button><?= $action ?></button>
-</form> 
+<a href="/<?= strtolower($action) ?>" style="display:inline-block; margin-left:3em;">
+    <button>
+        <?= $action ?>
+    </button>
+</a>
 
 
 <!-- register (if needed) -->
 <?php if(is_null($user)): ?>
-    <form style="display:inline-block;" action="/register" method="POST">
-        <button>Register</button>
-    </form> 
+    <a href="/register" style="display:inline-block;">
+        <button>
+            Register
+        </button>
+    </a> 
 <?php endif; ?>
 
 

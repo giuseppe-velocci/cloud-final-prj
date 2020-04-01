@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Login;
+namespace App\Api\Login;
 
 // required headers
 header("Access-Control-Allow-Origin: *");

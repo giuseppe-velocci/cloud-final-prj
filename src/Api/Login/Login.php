@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Login;
+namespace App\Api\Login;
 
 use App\Db\MongoConnection;
 use App\Db\User;
@@ -53,7 +53,8 @@ if($user->EmailExists(htmlspecialchars(strip_tags($data->email))) && password_ve
 	);
 }
 // login failed
-else{
+else
+{
 // set reponse code
 	http_response_code(401);
 

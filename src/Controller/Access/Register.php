@@ -6,46 +6,62 @@ namespace App\Controller\Access;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use App\Api\Registration\CreateUser;
-use App\Middleware\IHttpRequestMiddleware;
-use App\Middleware\IHttpResponseMiddleware;
+use App\Middleware\Api\ApiPostRequestMiddleware;
+use App\Middleware\Api\Api2HttpResponseMiddleware;
+use App\Middleware\Cookie\CookieMiddleware;
 
-class Register implements \App\Controller\IController {
+use App\Controller\AbsWithMiddlewareController;
+use App\Middleware\InjectableMiddleware;
+
+class Register extends AbsWithMiddlewareController{
     protected $createUser;
-    protected $requestMiddleware;
-    protected $responseMiddleware;
+    protected $request2JsonMiddleware;
+    protected $json2HttpResponseMiddleware;
+    protected $cookieMiddleware;
+
 
     public function __construct(
         CreateUser $createUser, 
-        IHttpRequestMiddleware $requestMiddleware,
-        IHttpResponseMiddleware $responseMiddleware
+        ApiPostRequestMiddleware $request2JsonMiddleware,
+        Api2HttpResponseMiddleware $json2HttpResponseMiddleware
+ //       ,CookieMiddleware $cookieMiddleware
     )
     {
-        $this->plates = $plates;
         $this->createUser = $createUser;
-        $this->requestMiddleware = $requestMiddleware;
-        $this->responseMiddleware = $responseMiddleware;
+        $request2JsonMiddlewares = [
+            new InjectableMiddleware($request2JsonMiddleware),
+        ];
+        $json2HttpResponseMiddlewares = [
+            new InjectableMiddleware($json2HttpResponseMiddleware,
+                function($response) {
+                    setcookie('message', $response->getBody()-> read(60));
+                    return $response;
+                }
+            ),
+        ];
+        parent::__construct(
+            $request2JsonMiddlewares, $json2HttpResponseMiddlewares
+        );
     }
 
+
     protected function getRedirectView(ResponseInterface $response):string {
+        var_dump($response);
         if ($response->getStatusCode() == 200) {
             return '/register';
         } 
 
-        return '/';
+        return '/register';
     }
 
 
-    public function execute(ServerRequestInterface $request) :void {
-        $data = $this->requestMiddleware->handle(
-            $request,
-            null
-        );
+    protected function execRequest($request) {
+        $post = $request->getParsedBody();
+        return $this->createUser->execute($post['json']);
+    }
 
-        $response = $this->responseMiddleware->handle (
-            $this->createUser->execute($data),
-            null
-        );
-        
+    protected function execResponse($response) {
         header('Location: '.$this->getRedirectView($response));
+        exit;
     }
 }

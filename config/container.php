@@ -2,16 +2,18 @@
 
 use League\Plates\Engine;
 use Psr\Container\ContainerInterface;
-
+use Zend\Diactoros\ResponseFactory;
+use MongoDB\Driver\BulkWrite;
+use MongoDB\Driver\WriteConcern;
+//
 use App\Db\User;
 use App\Db\MongoConnection;
-use Zend\Diactoros\ResponseFactory;
-//
-use App\Middleware\IHttpRequestMiddleware;
-use App\Middleware\ApiRequestMiddleware;
-use App\Middleware\IHttpResponseMiddleware;
-use App\Middleware\ApiResponseMiddleware;
-use App\Helpers\HttpResponse;
+
+use App\Helper\ISanitizer;
+use App\Helper\CryptMsg;
+
+use App\Controller\Access\Register;
+
 
 
 return [
@@ -25,35 +27,20 @@ return [
         return new MongoConnection();
     },
 
-    User::class => function(ContainerInterface $c) {
-        return new User($c->get(MongoConnection::class));
+    BulkWrite::class => function (ContainerInterface $c) {
+        return new BulkWrite();
     },
 
-    'ApiRequestMiddlewareDefaultCallback' => function () {
-        return function ($r) {
-            return json_encode(implode('',$r));
-        };
-    },
-    IHttpRequestMiddleware::class => function(ContainerInterface $c) {
-        return new ApiRequestMiddleware(
-            $c->get('ApiRequestMiddlewareDefaultCallback')
-        );
+    WriteConcern::class => function (ContainerInterface $c) {
+        return new WriteConcern(MongoDB\Driver\WriteConcern::MAJORITY);
     },
 
-    'ApiResponseMiddlewareDefaultCallback' => function () {
-        return function ($json) {
-            $jsonObj = json_decode($json);
-            $response = new ResponseFactory();
-            try {
-                return $response->createResponse($jsonObj->code, $jsonObj->message);
-            } catch (\InvalidArgumentException $e) {
-                return $response->createResponse(500, $e);
-            }
-        };
+    ISanitizer::class => function (ContainerInterface $c) {
+        return new App\Helper\Sanitizer();
     },
-    IHttpResponseMiddleware::class => function(ContainerInterface $c) {
-        return new ApiResponseMiddleware(
-            $c->get('ApiResponseMiddlewareDefaultCallback')
-        );
+
+    // encrypting
+    CryptMsg::class => function(ContainerInterface $c) {
+        return CryptMsg::instance();
     },
 ];

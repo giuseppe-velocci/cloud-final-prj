@@ -12,3 +12,4 @@
 <br/>
 <input type="submit" value="Send" />
 </form>
+<span style="color:red"><?= $this->e($message); ?></span>

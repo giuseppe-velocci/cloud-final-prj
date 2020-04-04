@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use App\Db\ImagesDb;
+use App\Db\Images;
 use App\Config\Env;
 
 try {
@@ -20,8 +20,8 @@ $seeder = [
     'collection' => $collection,
     'file'       => $filename,
     'data'       => [
-        new ImagesDb('1', 'blob/img.url', 'user125', ["person", "sky"]),
-        new ImagesDb('2', 'blob/img-2.url', 'user10', ["person", "sea"])
+        new Images('1', 'blob/img.url', 'user125', ["person", "sky"]),
+        new Images('2', 'blob/img-2.url', 'user10', ["person", "sea"])
     ]
 ];
 

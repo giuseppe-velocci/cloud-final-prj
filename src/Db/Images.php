@@ -3,7 +3,11 @@ declare(strict_types=1);
 
 namespace App\Db;
 
-class ImagesDb extends GenericDbCollection{
+use App\Db\MongoWQuery;
+use App\Helper\ISanitizer;
+use App\Config\Env;
+
+class Images extends BaseMapObject{
     
     protected $id;
     protected $url;
@@ -12,16 +16,18 @@ class ImagesDb extends GenericDbCollection{
     protected $exif;
 
 
-    public function __construct(string $id, string $url, string $userId, array $tags, ?array $exif=null) {
-        $this->setId($id);
+    public function __construct(string $id, string $url, string $userId, array $tags, ?array $exif=null){
+		$this->setId($id);
         $this->setUrl($url);
         $this->setUserId($userId);
         $this->setTags($tags);
-        $this->setExif($exif);
-    }
+
+        if (! is_null($exif))
+            $this->setExif($exif);
+	}
 
     public function getId(): string {
-        return $this->id ;
+        return $this->id;
     }
     public function setId($id) {
         $this->id = $id;
@@ -54,5 +60,4 @@ class ImagesDb extends GenericDbCollection{
     public function setExif($exif) {
         $this->exif = $exif;
     }
-
 }

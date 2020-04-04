@@ -31,9 +31,10 @@ $controllerName = $routes[$murl] ?? App\Controller\Errors\Error404::class;
 $controller = $container->get($controllerName);
 $controller->execute($request);
 
+/*
 try{
   echo Env::get("DB_HOST");
 } catch(\Exception $e) {
     die($e->getMessage());
 }
-/**/
+*/

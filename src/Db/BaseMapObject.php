@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace App\Db;
 
-class GenericDbCollection {
-
+class BaseMapObject {
     /**
      * For some reason php will have troubles getting values declared inside the __construct
      * method with Reflection, instead it would give back an array with null values for the 
@@ -16,9 +15,12 @@ class GenericDbCollection {
      */
 
     /**
-     * function that returns an array with the object's properties and their values
+     * Returns an array with the object's properties and their values
+     * 
+     * @return array = all properties as key values pair
      */
     public function toArray() :array {
         return get_object_vars($this);
     }
+
 }

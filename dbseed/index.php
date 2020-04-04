@@ -1,9 +1,12 @@
 <?php
 declare(strict_types=1);
 
+chdir(__DIR__);
+
 require "../vendor/autoload.php";
 
 use App\Db\MongoConnection;
+use App\Db\BaseMapObject;
 use App\Config\Env;
 
 
@@ -30,7 +33,9 @@ use App\Config\Env;
 //---variable declarations
 $importCmd = 'mongoimport --db {$db} --collection {$collection} --file {$file} --jsonArray';
 try {
-    $db = Env::get('DB_NAME');
+    $db   = Env::get('DB_NAME');
+    $user = Env::get('DB_USER');
+    $pwd  = Env::get('DB_PWD');
     // -> "mongodb://localhost:27017"
     $driver = new MongoConnection('','');
 
@@ -43,7 +48,7 @@ try {
 
 /**
  * function that returns the string to be run with shell_exec command in bash
- * @$cmd = string
+ * @param $cmd = string
  * @return = cmd output
  */
 function cmdExec(string $cmd) : int {
@@ -57,14 +62,17 @@ var_dump($returnVal);
 }
 
 /**
- * function that encodes an array of App\Db\GenericDbCollection to json string
- * @$data = array of App\Db\GenericDbCollection objects
+ * function that encodes an array of App\Db\AbsDbCollection to json string
+ * @param $data = array of App\Db\AbsDbCollection objects
  * @return = json string
  */
 function array2json(array $data): string {
     $json = '[';
     foreach ($data AS $d) {
-        $json .= json_encode($d->toArray()) . ',';
+        if ($d instanceof BaseMapObject)
+            $d = $d->toArray();
+        
+        $json .= json_encode($d) . ',';
     }
     $json = substr($json, 0, -1);
     $json .= ']';
@@ -140,3 +148,18 @@ foreach ($scripts AS $s) {
         die("\n fatal error");
     }
 }
+
+
+// then add dbuser with a js script to be evaluated
+$script = file_get_contents('createUser.js');
+$script = str_replace('$db', $db, $script);
+$script = str_replace('$user', $user, $script);
+$script = str_replace('$pwd', $pwd, $script);
+
+echo $script;
+
+$evalCmd = sprintf("mongo --eval '%s'", $script);
+cmdExec($evalCmd);
+
+echo "\nDb user created successfully.";
+echo "\nDone.";

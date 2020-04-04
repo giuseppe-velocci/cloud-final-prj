@@ -18,28 +18,43 @@ class MongoConnection {
             $user = is_null($user) ? Env::get('DB_USER') : $user;
             $pwd  = is_null($pwd)  ? Env::get('DB_PWD') : $pwd;
             $host = Env::get('DB_HOST');
+            $db = Env::get('DB_NAME');
+/*
         } catch (\MongoDB\Driver\Exception\InvalidArgumentException $e) {
             die($e->getMessage());
+            
         } catch ( \MongoDB\Driver\Exception\RuntimeException $e) {
             die($e->getMessage());
+        }
+*/
+        } catch (\InvalidArgumentException $e) {
+            die($e->getMessage());
+            
         }
 
         $connectionString = "mongodb://";
         if (strlen($user) > 0 && strlen($pwd) > 0)
             $connectionString .= $user . ':' . $pwd. '@';
+        
         $connectionString .= preg_replace('/http(s?):\/\//', '', $host);
+        $connectionString .= sprintf('/%s', $db);
 
         $this->connectionString = $connectionString;
     }
 
+
     public function getConnection() : \MongoDB\Driver\Manager {
         try {
-            echo $this->connectionString."\n";
+// echo $this->connectionString."\n";
             $connection = new \MongoDB\Driver\Manager($this->connectionString);
-var_dump($connection);
+// var_dump($connection);
         } catch (\MongoDB\Driver\Exception\ConnectionException $e) { // check exception type
-            throw $e;
+            die($e);
+
+        } catch(\MongoDB\Driver\Exception\AuthenticationException $e) {
+            die($e);
         }
+
         return $connection;
     }
 

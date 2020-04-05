@@ -39,6 +39,8 @@ class Register extends AbsWithMiddlewareController{
             new InjectableMiddleware($responseMiddleware,
                 function($response) {
                     setcookie('message', $response->getBody()-> read(60));
+                    setcookie('code', ''.$response->getStatusCode());
+                    header('Location: /register');
                     return $response;
                 }
             ),
@@ -48,13 +50,8 @@ class Register extends AbsWithMiddlewareController{
         );
     }
 
-    protected function execRequest($request) {
+    protected function execRequest($request): ResponseInterface {
         $post = $request->getParsedBody();
         return $this->createUser->execute($post['json']);
-    }
-
-    protected function execResponse($response) {
-        header('Location: /register');
-        exit;
     }
 }

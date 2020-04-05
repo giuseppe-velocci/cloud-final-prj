@@ -12,4 +12,6 @@
 <br/>
 <input type="submit" value="Send" />
 </form>
-<span style="color:red"><?= $this->e($message); ?></span>
+<span style="color:<?= $this->e($msgStyle); ?>"><?= $this->e($message); ?></span>
+<br/>
+<a href="/"><button>Back</button></a>

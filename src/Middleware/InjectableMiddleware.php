@@ -2,14 +2,14 @@
 declare(strict_types=1);
 
 namespace App\Middleware;
-use App\Middleware\Interfaces\IMiddleware;
+use App\Middleware\IMiddleware;
 
 class InjectableMiddleware {
     protected $next;
     protected $middleware;
 
     public function __construct(
-        $middleware,
+        IMiddleware $middleware,
         ?callable $next=null 
     ) {
         $this->middleware = $middleware;

@@ -1,4 +1,5 @@
 /vendor
 *.env
 !*.template.env
+!*.encryptionKey.key
 .phpunit.result.cache

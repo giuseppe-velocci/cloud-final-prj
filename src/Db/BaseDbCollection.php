@@ -32,12 +32,6 @@ abstract class BaseDbCollection {
 
 
     /**
-     * @access protected
-     * @var array $requiredMapObjParams Array with a list of the mandatory params for the mapped object
-     */
-    protected $requiredMapObjParams;
-
-    /**
      * @access public
      * 
      * Constructor MUST be implemented in child classes because $collection must be provided
@@ -45,21 +39,15 @@ abstract class BaseDbCollection {
      * @param BaseMapObject $mapObj Object that maps the single document
      * @param MongoWQuery $wQuery Enquees and executes mongodb queries
      * @param ISanitizer $sanitizer Sanitizer class
-     * @param array $requiredMapObjParams Array of strings with params name that are required for the docs in this collection
-     * @param string $collection Mongo Collection name
      */
 	public function __construct(
         BaseMapObject $mapObj,
         MongoWQuery $wQuery,
-        ISanitizer $sanitizer,
-        array $requiredMapObjParams,
-        string $collection
+        ISanitizer $sanitizer
 	){
         $this->mapObj = $mapObj;
 		$this->wQuery = $wQuery;
         $this->sanitizer = $sanitizer;
-        $this->requiredMapObjParams = $requiredMapObjParams;
-        $this->collection = $collection;
 	}
 
     /**
@@ -70,55 +58,23 @@ abstract class BaseDbCollection {
      */
     protected function setupDoc(bool $withId = false) :array{
         $data = $this->mapObj->toArray();
+        unset($data['required']);
 
-        foreach ($this->requiredMapObjParams AS $k) {
+        foreach ($this->mapObj->getRequired() AS $k) {
              if (empty($data[$k]))
                 throw new \InvalidArgumentException(sprintf("Missing argument for %s", $k));
         }
 
         array_map($this->sanitizer->clean, $data);
 
-        if (! $withId && array_key_exists('_id', $data))
+        if (! $withId && array_key_exists('_id', $data)) {
             unset($data['_id']);
+        }
         
         return $data;
     }
 
 
-
-    /**
-     * Execute a generic mongo write query. Data to write will be taken from setupDoc() method.
-     * 
-     * @param string $cmd = must be one of insert, update, delete
-     * @param ?array $filter = nullable array with filters. Mandatory for update and delete
-     * @return bool = true/false for success/failure
-     */
-/*    protected function executeQuery(string $cmd, ?array $filter=null) :bool {
-		try {
-            $doc = $this->setupDoc();
-			$this->wQuery->addQuery($cmd, $doc, $filter);
-		} catch (\InvalidArgumentException $e) {
-			die($e->getMessage());
-        }
-        
-        if (empty($this->wQuery->execute($this->collection)))
-            return false;
-
-        return true;
-    }
-
-    public function insert() :bool {
-		return $this->executeQuery('insert');
-    }
-    
-    public function update(array $filter) :bool {
-        return $this->executeQuery('update', ['$set' => $doc ], $filter);
-    }
-
-    public function delete(array $filter){
-        return $this->executeQuery('delete', [], $filter);
-    }
-*/
     /**
      * Add all queries (insert, update, delete) to the bulkWriter
      * 

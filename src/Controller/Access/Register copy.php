@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use App\Api\Registration\CreateUser;
 use App\Middleware\Api\ApiPostRequestMiddleware;
-use App\Middleware\Api\Api2HttpResponseMiddleware;
+use App\Middleware\Api\Api2HtmlResponseMiddleware;
 use App\Middleware\Cookie\CookieMiddleware;
 
 class Register implements \App\Controller\IController{
@@ -20,7 +20,7 @@ class Register implements \App\Controller\IController{
     public function __construct(
         CreateUser $createUser, 
         ApiPostRequestMiddleware $requestMiddleware,
-        Api2HttpResponseMiddleware $responseMiddleware,
+        Api2HtmlResponseMiddleware $responseMiddleware,
         CookieMiddleware $cookieMiddleware
     )
     {

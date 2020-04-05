@@ -5,11 +5,13 @@ namespace App\Db;
 
 class User extends BaseMapObject{
 	// obj properties
-	protected $id;
+	protected $_id;
 	protected $firstname;
 	protected $lastname;
 	protected $email;
 	protected $password;
+
+	protected $required = ['firstname', 'lastname', 'email', 'password'];
 
 	// constructor
 	public function __construct(
@@ -19,7 +21,7 @@ class User extends BaseMapObject{
 		string $email = '',
 		string $password = ''
 	){
-		$this->id = $id; 
+		$this->_id = $id; 
 		$this->firstname = $firstname;
 		$this->lastname = $lastname;
 		$this->email = $email;
@@ -28,10 +30,10 @@ class User extends BaseMapObject{
 
 
 	public function getId(): ?string {
-		return $this->id;
+		return $this->_id;
 	}
 	public function setId($id) {
-		$this->id= $id;
+		$this->_id= $id;
 	}
 
 	public function getFirstname(): ?string {

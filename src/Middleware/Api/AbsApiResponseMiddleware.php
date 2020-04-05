@@ -10,7 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 
 abstract class AbsApiResponseMiddleware implements IMiddleware{
 
-    protected abstract function middlewareAction(string $response);
+    protected abstract function middlewareAction(ResponseInterface $response);
 
     public function handle($data, ?callable $next=null) {
         $result = $this->middlewareAction($data);

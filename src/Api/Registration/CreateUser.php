@@ -4,28 +4,44 @@ declare(strict_types=1);
 
 namespace App\Api\Registration;
 
+use App\Api\AbsApi;
 use App\Db\User;
 use App\Db\UserDbCollection;
-use App\Api\AbsApi;
+use App\Helper\ResponseFactory;
+use Psr\Http\Message\ResponseInterface;
+
 
 class CreateUser extends AbsApi{
     protected $user;
     protected $userDb;
 
-    public function __construct(User $user, UserDbCollection $userDb) {
+    public function __construct(
+        User $user, 
+        UserDbCollection $userDb, 
+        ResponseFactory $responseFactory
+    ) {
         // get database connection
         $this->user = $user;
         $this->userDb = $userDb;
+        $this->responseFactory = $responseFactory;
     }
 
-    public function execute(string $jsonData) :string {
+    public function execute(string $jsonData) :ResponseInterface {
         // required headers
 /**/         //header('Access-Control-Allow-Origin: http://localhost/rest-api-authentication-example/');
-        header('Content-Type: application/json; charset=UTF-8');
+
+/*header('Content-Type: application/json; charset=UTF-8');
         header('Access-Control-Allow-Methods: POST');
         header('Access-Control-Max-Age: 3600');
         header('Access-Control-Allow-Headers: Content-Type, '
             .'Access-Control-Allow-Headers, Authorization, X-Requested-With');
+*/
+        $headers = [
+            'Content-Type' => 'application/json; charset=UTF-8',
+            'Access-Control-Allow-Methods' => 'POST',
+            'Access-Control-Max-Age' => '3600',
+            'Access-Control-Allow-Headers' => 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With'
+        ];
 
         // get posted data
         //$data = $request->getParsedBody();
@@ -38,7 +54,7 @@ class CreateUser extends AbsApi{
             || is_null($data->pwd)
         ) {
          // echo
-            return $this->setResponse(400, 'Missing data. All parameters are needed.'); ;
+            return $this->setResponse(400, 'Missing data. All parameters are needed.', $headers);
         }
 
         // instantiate user object
@@ -46,28 +62,25 @@ class CreateUser extends AbsApi{
         $this->user->setLastname($data->lastname);
         $this->user->setEmail($data->email);
         $this->user->setPassword($data->pwd);
-/*
-var_dump($this->user);
-die();
-*/
-        
+      
         try {
             $this->userDb->mapObj = $this->user;
             $this->userDb->setupQuery('insert');
         } catch (\InvalidArgumentException $e) {
            // echo
-            return  $this->setResponse(400, $e->getMessage());;
+// var_dump($this->setResponse(400, $e->getMessage(), $headers));
+            return $this->setResponse(400, $e->getMessage(), $headers);
         }
 
         $code = 400;
-        $phrase = 'Unable to create user.';
-        if (! $this->userDb->executeQueries()) {
+        $message = 'Unable to create user.';
+        if ($this->userDb->executeQueries()) {
             $code = 200;
-            $phrase = 'User was created.';
+            $message = 'User successfully created!';
         } 
 
         // message if unable to create user
   //  echo
-        return $this->setResponse($code, $phrase);;
+        return $this->setResponse($code, $message, $headers);
     }
 }

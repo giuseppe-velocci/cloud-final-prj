@@ -12,12 +12,10 @@ abstract class AbsApiRequestMiddleware implements IMiddleware{
     protected abstract function middlewareAction(ServerRequestInterface $request);
 
     public function handle($data, ?callable $next=null) {
-        $result = $this->middlewareAction($data);
-
-        if (is_null($next)) {
-            return $result;
+        if (! is_null($next)) {
+            $data = $next($data);
         }
 
-        return $next($result);
+        return $this->middlewareAction($data);
     }
 }

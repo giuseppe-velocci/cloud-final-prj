@@ -90,6 +90,7 @@ class MongoWQuery {
             printf("Other error: %s\n", $e->getMessage());
             exit;
         }
+        return $result;
     }
     
 }

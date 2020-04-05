@@ -10,16 +10,15 @@ use App\Config\Env;
 use App\Db\User;
 
 class UserDbCollection extends BaseDbCollection {
+    protected $collection = 'appusers';
    
     public function __construct(
         BaseMapObject $mapObj,
         MongoWQuery $wQuery,
-        ISanitizer $sanitizer,
-        array $requiredMapObjParams = ['firstname', 'lastname', 'email', 'password'],
-        string $collection = 'appusers'
+        ISanitizer $sanitizer
 	){
         parent::__construct(
-            $mapObj, $wQuery, $sanitizer, $requiredMapObjParams, $collection
+            $mapObj, $wQuery, $sanitizer
         );
 	}
 

@@ -8,16 +8,15 @@ use App\Helper\ISanitizer;
 use App\Config\Env;
 
 class ImagesDbCollection extends AbsDbCollection{
+    protected $collection = 'images';
     
     public function __construct(
         BaseMapObject $mapObj,
         MongoWQuery $wQuery,
-        ISanitizer $sanitizer,
-        array $requiredMapObjParams = ['url', 'userId', 'tags'],
-        string $collection = 'images'
+        ISanitizer $sanitizer
 	){
         parent::__construct(
-            $mapObj, $wQuery, $sanitizer, $requiredMapObjParams, $collection
+            $mapObj, $wQuery, $sanitizer
         );
 	}
 

@@ -17,9 +17,9 @@ class Register implements \App\Controller\IController {
     public function execute(ServerRequestInterface $request) :void {
         $cookies = $request->getCookieParams();
         $message = '';
-        if (isset($cookies['message']))
-        {
+        if (isset($cookies['message'])) {
             $message = $cookies['message'];
+            setcookie('message','',1);
         }
 
         echo $this->plates->render('register', [

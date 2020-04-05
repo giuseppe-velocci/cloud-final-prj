@@ -5,9 +5,10 @@ namespace App\Controller\Access;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use App\Helper\HashMsg;
 use App\Api\Registration\CreateUser;
 use App\Middleware\Api\ApiPostRequestMiddleware;
-use App\Middleware\Api\Api2HttpResponseMiddleware;
+use App\Middleware\Api\Api2HtmlResponseMiddleware;
 use App\Middleware\Cookie\CookieMiddleware;
 
 use App\Controller\AbsWithMiddlewareController;
@@ -15,24 +16,27 @@ use App\Middleware\InjectableMiddleware;
 
 class Register extends AbsWithMiddlewareController{
     protected $createUser;
-    protected $request2JsonMiddleware;
-    protected $json2HttpResponseMiddleware;
-    protected $cookieMiddleware;
-
 
     public function __construct(
         CreateUser $createUser, 
-        ApiPostRequestMiddleware $request2JsonMiddleware,
-        Api2HttpResponseMiddleware $json2HttpResponseMiddleware
- //       ,CookieMiddleware $cookieMiddleware
+        ApiPostRequestMiddleware $requestMiddleware,
+        Api2HtmlResponseMiddleware $responseMiddleware
     )
     {
         $this->createUser = $createUser;
-        $request2JsonMiddlewares = [
-            new InjectableMiddleware($request2JsonMiddleware),
+
+        $requestMiddleware = [
+            new InjectableMiddleware($requestMiddleware,
+                function ($request) {
+                    $post = $request->getParsedBody();
+                    $post['pwd'] = HashMsg::hash($post['pwd']);
+                    return $request->withParsedBody($post);
+                }
+            ),
         ];
-        $json2HttpResponseMiddlewares = [
-            new InjectableMiddleware($json2HttpResponseMiddleware,
+
+        $responseMiddleware = [
+            new InjectableMiddleware($responseMiddleware,
                 function($response) {
                     setcookie('message', $response->getBody()-> read(60));
                     return $response;
@@ -40,20 +44,9 @@ class Register extends AbsWithMiddlewareController{
             ),
         ];
         parent::__construct(
-            $request2JsonMiddlewares, $json2HttpResponseMiddlewares
+            $requestMiddleware, $responseMiddleware
         );
     }
-
-
-    protected function getRedirectView(ResponseInterface $response):string {
-        var_dump($response);
-        if ($response->getStatusCode() == 200) {
-            return '/register';
-        } 
-
-        return '/register';
-    }
-
 
     protected function execRequest($request) {
         $post = $request->getParsedBody();
@@ -61,7 +54,7 @@ class Register extends AbsWithMiddlewareController{
     }
 
     protected function execResponse($response) {
-        header('Location: '.$this->getRedirectView($response));
+        header('Location: /register');
         exit;
     }
 }

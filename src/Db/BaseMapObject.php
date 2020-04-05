@@ -15,6 +15,21 @@ class BaseMapObject {
      */
 
     /**
+     * @access protected
+     * @var array $required List of required parameters for object creation.
+     */
+    protected $required;
+
+    /**
+     * Returns the list of required params for this object to be valid.
+     * @access public
+     * @return array List of required parameters for object creation.
+     */
+    public function getRequired() {
+        return $this->required;
+    }
+
+    /**
      * Returns an array with the object's properties and their values
      * 
      * @return array = all properties as key values pair

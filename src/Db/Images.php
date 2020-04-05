@@ -7,13 +7,14 @@ use App\Db\MongoWQuery;
 use App\Helper\ISanitizer;
 use App\Config\Env;
 
-class Images extends BaseMapObject{
-    
-    protected $id;
+class Images extends BaseMapObject{ 
+    protected $_id;
     protected $url;
     protected $userId;
     protected $tags;
     protected $exif;
+
+    protected $required = ['url', 'userId', 'tags'];
 
 
     public function __construct(string $id, string $url, string $userId, array $tags, ?array $exif=null){
@@ -27,10 +28,10 @@ class Images extends BaseMapObject{
 	}
 
     public function getId(): string {
-        return $this->id;
+        return $this->_id;
     }
     public function setId($id) {
-        $this->id = $id;
+        $this->_id = $id;
     }
 
     public function getUrl() {

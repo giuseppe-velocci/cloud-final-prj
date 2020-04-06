@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Middleware\Api;
 
 use App\Middleware\IMiddleware;
+use App\Middleware\AbsResponseMiddleware;
 use Psr\Http\Message\ResponseInterface;
 use App\Helper\ResponseFactory;
 
-class Api2HtmlResponseMiddleware extends AbsApiResponseMiddleware implements IMiddleware{
+class Api2HtmlResponseMiddleware extends AbsResponseMiddleware implements IMiddleware{
     protected $responseFactory;
     public function __construct(ResponseFactory $responseFactory){
         $this->responseFactory = $responseFactory;

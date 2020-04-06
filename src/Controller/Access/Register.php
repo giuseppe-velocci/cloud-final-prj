@@ -25,35 +25,38 @@ class Register extends AbsWithMiddlewareController{
     {
         $this->createUser = $createUser;
 
-        $requestMiddleware = [
+        $middlewares = [
             new InjectableMiddleware($requestMiddleware,
                 function ($request) {
-                    $post = $request->getParsedBody();
-                    $post['pwd'] = HashMsg::hash($post['pwd']);
-                    return $request->withParsedBody($post);
+                    return $this->handleRequest($request);
+                }
+            ),
+            new InjectableMiddleware($responseMiddleware,
+                function($response) {
+                    $this->handleResponse($response);
                 }
             ),
         ];
 
-        $responseMiddleware = [
-            new InjectableMiddleware($responseMiddleware,
-                function($response) {
-                    setcookie('message', $response->getBody()-> read(60));
-                    return $response;
-                }
-            ),
-        ];
         parent::__construct(
-            $requestMiddleware, $responseMiddleware
+            $middlewares
         );
     }
 
-    protected function execRequest($request) {
+    protected function exec($request) {
         $post = $request->getParsedBody();
         return $this->createUser->execute($post['json']);
     }
 
-    protected function execResponse($response) {
+    protected function handleRequest($request) {
+        $post = $request->getParsedBody();
+        $post['pwd'] = HashMsg::hash($post['pwd']);
+        return $request->withParsedBody($post);
+    }
+
+    protected function handleResponse($response) {
+        setcookie('message', $response->getBody()-> read(60));
+        setcookie('code', ''.$response->getStatusCode());
         header('Location: /register');
         exit;
     }

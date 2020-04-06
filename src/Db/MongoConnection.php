@@ -9,6 +9,7 @@ class MongoConnection {
     // format = "mongodb://localhost:27017"
     // format = "mongodb://alex:mypassword@10.111.0.2:27017/"
     private $connectionString;
+    private $db;
 
     /**
      * 
@@ -18,15 +19,8 @@ class MongoConnection {
             $user = is_null($user) ? Env::get('DB_USER') : $user;
             $pwd  = is_null($pwd)  ? Env::get('DB_PWD') : $pwd;
             $host = Env::get('DB_HOST');
-            $db = Env::get('DB_NAME');
-/*
-        } catch (\MongoDB\Driver\Exception\InvalidArgumentException $e) {
-            die($e->getMessage());
-            
-        } catch ( \MongoDB\Driver\Exception\RuntimeException $e) {
-            die($e->getMessage());
-        }
-*/
+            $this->db = Env::get('DB_NAME');
+
         } catch (\InvalidArgumentException $e) {
             die($e->getMessage());
             
@@ -37,11 +31,16 @@ class MongoConnection {
             $connectionString .= $user . ':' . $pwd. '@';
         
         $connectionString .= preg_replace('/http(s?):\/\//', '', $host);
-        $connectionString .= sprintf('/%s', $db);
+        $connectionString .= sprintf('/%s', $this->db);
 
         $this->connectionString = $connectionString;
     }
 
+
+    public function getDb() {
+        return $this->db;
+    }
+    
 
     public function getConnection() : \MongoDB\Driver\Manager {
         try {

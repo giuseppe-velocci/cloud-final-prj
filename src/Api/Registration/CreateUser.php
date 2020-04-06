@@ -12,6 +12,7 @@ use Psr\Http\Message\ResponseInterface;
 
 
 class CreateUser extends AbsApi{
+	protected $config;
     protected $user;
     protected $userDb;
 
@@ -24,28 +25,18 @@ class CreateUser extends AbsApi{
         $this->user = $user;
         $this->userDb = $userDb;
         $this->responseFactory = $responseFactory;
+
+        chdir(dirname(__DIR__, 3));
+		$this->config = require_once 'config/api.php';
+		date_default_timezone_set($this->config['timezone']);
     }
 
     public function execute(string $jsonData) :ResponseInterface {
         // required headers
-/**/         //header('Access-Control-Allow-Origin: http://localhost/rest-api-authentication-example/');
-
-/*header('Content-Type: application/json; charset=UTF-8');
-        header('Access-Control-Allow-Methods: POST');
-        header('Access-Control-Max-Age: 3600');
-        header('Access-Control-Allow-Headers: Content-Type, '
-            .'Access-Control-Allow-Headers, Authorization, X-Requested-With');
-*/
-        $headers = [
-            'Content-Type' => 'application/json; charset=UTF-8',
-            'Access-Control-Allow-Methods' => 'POST',
-            'Access-Control-Max-Age' => '3600',
-            'Access-Control-Allow-Headers' => 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With'
-        ];
+        $headers = $this->config['headers'];
 
         // get posted data
-        //$data = $request->getParsedBody();
-        $data = json_decode($jsonData); // json_decode(file_get_contents('php://input')));
+        $data = json_decode($jsonData);
         
         if (
             is_null($data->firstname)
@@ -67,8 +58,6 @@ class CreateUser extends AbsApi{
             $this->userDb->mapObj = $this->user;
             $this->userDb->setupQuery('insert');
         } catch (\InvalidArgumentException $e) {
-           // echo
-// var_dump($this->setResponse(400, $e->getMessage(), $headers));
             return $this->setResponse(400, $e->getMessage(), $headers);
         }
 

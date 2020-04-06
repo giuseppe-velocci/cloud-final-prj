@@ -17,13 +17,20 @@ class Register implements \App\Controller\IController {
     public function execute(ServerRequestInterface $request) :void {
         $cookies = $request->getCookieParams();
         $message = '';
+        $msgStyle = 'red';
         if (isset($cookies['message'])) {
             $message = $cookies['message'];
             setcookie('message','',1);
         }
+        if (isset($cookies['code'])) {
+            if ($cookies['code'] == '200')
+                $msgStyle = 'black';
+            setcookie('code','',1);
+        }
 
         echo $this->plates->render('register', [
-           'message' => $message
+           'message' => $message,
+           'msgStyle' => $msgStyle
         ]);
     }
 }

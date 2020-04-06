@@ -3,9 +3,15 @@ declare(strict_types=1);
 
 namespace App\Controller;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 abstract class AbsWithMiddlewareController {
     /**
+     * Pipeline of operations. Be aware that request middleware execute
+     * $next callback BEFORE thier logic, while response middleware
+     * execute it AFTER their own logic.
+     * All operations will be executed in the exact order they are declared in the constructor.
+     * 
      * @access public
      * @var array $pipeline Array of arrays of InjectableMiddleware instances
      */
@@ -31,7 +37,9 @@ abstract class AbsWithMiddlewareController {
         return self::RESPONSE;
     }
 
+
     protected abstract function exec($request);
+
 
     public function execute(ServerRequestInterface $request) :void {
         $resultingRequest = $request;

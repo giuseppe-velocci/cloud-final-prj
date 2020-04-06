@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Db;
 
 use App\Helper\ISanitizer;
+use MongoDB\Driver\CursorInterface;
 
 abstract class BaseDbCollection {
     /**
@@ -82,7 +83,7 @@ abstract class BaseDbCollection {
      * @param ?array $filter    array with filter mongodb arguments. mandatory for update and delete
      * @return void
      */
-    public function setupQuery(string $cmd, ?array $filter = null): void {
+    public function setupQuery(string $cmd, ?array $filter = null) :void {
         $doc = $this->setupDoc();
         if ($cmd == 'update') 
             $doc = ['$set' => $doc];
@@ -102,4 +103,19 @@ abstract class BaseDbCollection {
         return true;
     }
 
+
+    /**
+     * Selection queries manager
+     * 
+     * @param array $filter array with filter arguments for the query
+     * @param array $options array with options for the query
+     * @return MongoDB\Driver\CursorInterface Mongo cursor object
+     */
+    public function select(array $filter, array $options=[]) :CursorInterface {
+        $query = new \MongoDB\Driver\Query($filter, $options);
+        return $this->connection->executeQuery(
+            sprintf('%s.%s', $this->connection->getDb(), $this->collection), 
+            $query
+        ); 
+    }
 }

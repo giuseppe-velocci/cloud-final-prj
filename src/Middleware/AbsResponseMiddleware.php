@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Middleware\Api;
+namespace App\Middleware;
 
-// use App\Middleware\Interfaces\IJsonResponseMiddleware;
 use App\Middleware\IMiddleware;
 use Psr\Http\Message\ResponseInterface;
 
-abstract class AbsApiResponseMiddleware implements IMiddleware{
+abstract class AbsResponseMiddleware implements IMiddleware{
 
     protected abstract function middlewareAction(ResponseInterface $response);
 

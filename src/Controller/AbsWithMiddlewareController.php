@@ -17,26 +17,40 @@ abstract class AbsWithMiddlewareController {
      */
     protected $pipeline;
 
+    const REQUEST  = 'request';
+    const RESPONSE = 'response';
+
     public function __construct (
-        array $requestMiddlewares,
-        array $responseMiddlewares
+        array $middlewares
     ) {
-        $this->pipeline['request']  = $requestMiddlewares;
-        $this->pipeline['response'] = $responseMiddlewares;
+        foreach ($middlewares AS $middleware) {
+            $this->pipeline[$this->getMiddlewareType($middleware)][] = $middleware;
+        }
     }
 
-    protected abstract function execRequest($request) :ResponseInterface;
+    protected function getMiddlewareType($middleware) :string {
+        $class = new \ReflectionClass($middleware->getMiddleware());
+        $parent = $class->getParentClass()->name;
+        if (stripos($parent, self::REQUEST) !== false) {
+            return self::REQUEST;
+        }
+        return self::RESPONSE;
+    }
+
+
+    protected abstract function exec($request);
+
 
     public function execute(ServerRequestInterface $request) :void {
         $resultingRequest = $request;
 
-        foreach ($this->pipeline['request'] AS $middleware) {
+        foreach ($this->pipeline[self::REQUEST] AS $middleware) {
             $resultingRequest = $middleware->handle($resultingRequest);
         }
 
-        $response = $this->execRequest($resultingRequest);
+        $response = $this->exec($resultingRequest);
 
-        foreach ($this->pipeline['response'] AS $middleware) {
+        foreach ($this->pipeline[self::RESPONSE] AS $middleware) {
             $response = $middleware->handle($response);
         }
     }

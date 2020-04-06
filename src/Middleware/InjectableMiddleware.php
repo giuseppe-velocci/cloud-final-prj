@@ -16,6 +16,10 @@ class InjectableMiddleware {
         $this->next = $next;
     }
 
+    public function getMiddleware() {
+        return $this->middleware;
+    }
+
     public function handle($data) {
         return $this->middleware->handle($data, $this->next);
     }

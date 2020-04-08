@@ -65,8 +65,14 @@ class LoginApi extends AbsApi {
 
 		// generate jwt
 		$jwt = JWT::encode($token, $this->config['key']);
+		$user = $this->userDb->mapObj->getEmail();
 		$headers['Authorization'] = sprintf('Bearer %s', $jwt);
-		return $this->setResponse(200, "Successful login!", $headers);
+		
+		return $this->setResponse(
+			200, 
+			['msg'=>"Successful login!", 'storage'=>['user' => $user, 'token'=>$jwt]], 
+			$headers
+		);
 	}
 }
 ?>

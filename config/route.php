@@ -6,6 +6,7 @@ return [
     
     'GET /login'  => App\Controller\Views\Login::class,
     'POST /login' => App\Controller\Access\Login::class,
+    'GET /logout'  => App\Controller\Access\Logout::class,
 
     'POST /validatelogin' => App\Controller\Access\ValidateLogin::class,
 

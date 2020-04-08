@@ -8,14 +8,19 @@ use App\Middleware\IMiddleware;
 use App\Middleware\AbsRequestMiddleware;
 use Psr\Http\Message\ServerRequestInterface;
 use App\Controller\Access\ValidateLogin;
+use App\Helper\CryptMsg;
 
-class NeedsAuthMiddleware extends AbsRequestMiddleware implements IMiddleware{
+
+class NeedsAuthMiddleware extends AbsRequestMiddleware implements IMiddleware {
     protected $apiCaller;
+    protected $crypt;
 
     public function __construct(
-        ValidateLogin $apiCaller
+        ValidateLogin $apiCaller,
+        CryptMsg $crypt
     ) {
         $this->apiCaller = $apiCaller;
+        $this->crypt = $crypt;
     }
     
     protected function middlewareAction (ServerRequestInterface $request) {
@@ -31,7 +36,7 @@ class NeedsAuthMiddleware extends AbsRequestMiddleware implements IMiddleware{
         $postRequest = $request->withMethod('POST');
         $postRequest = $postRequest->withHeader(
             'Authorization', 
-            sprintf('Bearer %s', $cookies['token'])
+            sprintf('Bearer %s', $this->crypt->decrypt($cookies['token'], $this->crypt::nonce()))
         );
 
         $this->apiCaller->execute($postRequest);

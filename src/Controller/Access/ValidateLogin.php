@@ -13,7 +13,7 @@ use App\Middleware\Api\Api2HtmlResponseMiddleware;
 use App\Middleware\Auth\ApiNeedsAuthMiddleware;
 
 
-class ValidateLogin extends AbsController {
+class ValidateLogin extends AbsController implements \App\Controller\IController {
     use \App\Controller\Traits\SetMessageTrait;
 
     protected $apiAction;

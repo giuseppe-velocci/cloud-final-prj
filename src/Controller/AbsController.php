@@ -5,7 +5,7 @@ namespace App\Controller;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-abstract class AbsWithMiddlewareController {
+abstract class AbsController {
     /**
      * Pipeline of operations. Be aware that request middleware execute
      * $next callback BEFORE thier logic, while response middleware
@@ -21,7 +21,7 @@ abstract class AbsWithMiddlewareController {
     const RESPONSE = 'response';
 
     public function __construct (
-        array $middlewares
+        array $middlewares=[]
     ) {
         foreach ($middlewares AS $middleware) {
             $this->pipeline[$this->getMiddlewareType($middleware)][] = $middleware;
@@ -38,20 +38,24 @@ abstract class AbsWithMiddlewareController {
     }
 
 
-    protected abstract function exec($request);
+    protected abstract function controllerResponse($request);
 
 
     public function execute(ServerRequestInterface $request) :void {
         $resultingRequest = $request;
 
-        foreach ($this->pipeline[self::REQUEST] AS $middleware) {
-            $resultingRequest = $middleware->handle($resultingRequest);
+        if (isset($this->pipeline[self::REQUEST])) {
+            foreach ($this->pipeline[self::REQUEST] AS $middleware) {
+                $resultingRequest = $middleware->handle($resultingRequest);
+            }
         }
-
-        $response = $this->exec($resultingRequest);
-
-        foreach ($this->pipeline[self::RESPONSE] AS $middleware) {
-            $response = $middleware->handle($response);
+        
+        $response = $this->controllerResponse($resultingRequest);
+        
+        if (isset($this->pipeline[self::RESPONSE])) {
+            foreach ($this->pipeline[self::RESPONSE] AS $middleware) {
+                $response = $middleware->handle($response);
+            }
         }
     }
 }

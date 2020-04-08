@@ -15,7 +15,7 @@ class User extends BaseMapObject{
 
 	// constructor
 	public function __construct(
-		string $id = '', 
+		$id = '', 
 		string $firstname = '',
 		string $lastname = '',
 		string $email = '',
@@ -29,7 +29,7 @@ class User extends BaseMapObject{
 	}
 
 
-	public function getId(): ?string {
+	public function getId() {
 		return $this->_id;
 	}
 	public function setId($id) {

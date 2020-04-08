@@ -14,7 +14,7 @@ class ResponseFactory {
     public function createResponse(
         int $type, 
         int $code, 
-        string $body, 
+        $body, 
         array $headers=[]
     ) :ResponseInterface {
         if ($type == self::HTML) {

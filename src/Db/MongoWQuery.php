@@ -6,6 +6,8 @@ namespace App\Db;
 use App\Config\Env;
 use MongoDB\Driver\BulkWrite;
 use MongoDB\Driver\WriteConcern;
+use MongoDB\Driver\Query;
+use MongoDB\Driver\CursorInterface;
 
 class MongoWQuery {
     protected $connection;
@@ -23,12 +25,9 @@ class MongoWQuery {
         $this->connection = $connection->getConnection();
         $this->bulk = $bulk;
         $this->wConcern = $wConcern;
-        try 
-        {
+        try {
             $this->db = is_null($db) ? Env::get('DB_NAME') : $db;
-        } 
-        catch (\InvalidArgumentException $e) 
-        {
+        } catch (\InvalidArgumentException $e)  {
             die($e->getMessage());
         }
     }
@@ -61,12 +60,9 @@ class MongoWQuery {
 
 
     public function execute(string $collection) {
-        try 
-        {
+        try  {
             $result = $this->connection->executeBulkWrite("$this->db.$collection", $this->bulk, $this->wConcern);
-        } 
-        catch (MongoDB\Driver\Exception\BulkWriteException $e) 
-        {
+        } catch (MongoDB\Driver\Exception\BulkWriteException $e) {
             $result = $e->getWriteResult();
         
             // Check if the write concern could not be fulfilled
@@ -93,4 +89,11 @@ class MongoWQuery {
         return $result;
     }
     
+
+    public function select(Query $query, string $collection) :CursorInterface  {
+        return $this->connection->executeQuery(
+            sprintf('%s.%s', $this->db, $collection),
+            $query
+        );
+    }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Controller;
 use Psr\Http\Message\ServerRequestInterface;
 
-abstract class AbsWithMiddlewareController {
+abstract class AbsController {
     /**
      * @access public
      * @var array $pipeline Array of arrays of InjectableMiddleware instances

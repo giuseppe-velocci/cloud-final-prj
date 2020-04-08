@@ -2,35 +2,32 @@
 declare(strict_types=1);
 
 namespace App\Controller\Views;
-use Psr\Http\Message\ServerRequestInterface;
+
 use League\Plates\Engine;
+use Psr\Http\Message\ServerRequestInterface;
+use App\Helper\ResponseFactory;
+use App\Controller\ViewController;
+use App\Middleware\InjectableMiddleware;
+use App\Middleware\Html\ResponseOutputMiddleware;
 
-class Register implements \App\Controller\IController {
-    protected $plates;
+class Register extends ViewController implements \App\Controller\IController {
+    use \App\Controller\Traits\GetMessageTrait;
 
-    public function __construct(Engine $plates)
-    {
-        $this->plates  = $plates;
+    public function __construct(
+        Engine $plates,
+        ResponseFactory $responsefactory,
+        ResponseOutputMiddleware $reponseOutput
+    ) {
+        $template = 'register';
+        $middlewares = [];
+        parent::__construct($template, $plates, $responsefactory, $reponseOutput, $middlewares);
     }
 
-
-    public function execute(ServerRequestInterface $request) :void {
-        $cookies = $request->getCookieParams();
-        $message = '';
-        $msgStyle = 'red';
-        if (isset($cookies['message'])) {
-            $message = $cookies['message'];
-            setcookie('message','',1);
-        }
-        if (isset($cookies['code'])) {
-            if ($cookies['code'] == '200')
-                $msgStyle = 'black';
-            setcookie('code','',1);
-        }
-
-        echo $this->plates->render('register', [
-           'message' => $message,
-           'msgStyle' => $msgStyle
-        ]);
+    protected function setViewParams($request) :array{
+        $this->getResultMessage($request);
+        return [
+            'message' => $this->message,
+            'msgStyle' => $this->msgStyle
+        ];
     }
 }

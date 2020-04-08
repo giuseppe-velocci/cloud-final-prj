@@ -10,21 +10,25 @@ use App\Controller\ViewController;
 use App\Middleware\InjectableMiddleware;
 use App\Middleware\Html\ResponseOutputMiddleware;
 
-class Home extends ViewController implements \App\Controller\IController {
-    
+class Login extends ViewController implements \App\Controller\IController {
+    use \App\Controller\Traits\GetMessageTrait;
+
     public function __construct(
         Engine $plates,
         ResponseFactory $responsefactory,
         ResponseOutputMiddleware $reponseOutput
     ) {
-        $template = 'home';
+        $template = 'login';
         $middlewares = [];
         parent::__construct($template, $plates, $responsefactory, $reponseOutput, $middlewares);
 
     }
 
-
     protected function setViewParams($request) :array{
-        return [];
+        $this->getResultMessage($request);
+        return [
+            'message' => $this->message,
+            'msgStyle' => $this->msgStyle
+        ];
     }
 }

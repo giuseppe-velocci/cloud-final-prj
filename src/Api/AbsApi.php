@@ -6,6 +6,7 @@ namespace App\Api;
 
 use App\Helper\ResponseFactory;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 abstract class AbsApi {
     protected $responseFactory;
@@ -14,7 +15,7 @@ abstract class AbsApi {
      * int code status code
      * string message  Text message that will be in the response payload
     */
-    protected function setResponse(int $code, string $message, array $headers) :ResponseInterface {
+    protected function setResponse(int $code, $message, array $headers) :ResponseInterface {
         // set response code
         // http_response_code($code);
         // display message:
@@ -35,5 +36,5 @@ abstract class AbsApi {
         }
     }
  
-    public abstract function execute(string $jsonData) :ResponseInterface;
+    public abstract function execute(ServerRequestInterface $jsonData) :ResponseInterface;
 }

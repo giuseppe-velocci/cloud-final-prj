@@ -13,7 +13,7 @@ use App\Middleware\Api\Api2HtmlResponseMiddleware;
 use App\Middleware\Crypto\HashMiddleware;
 
 
-class Register extends AbsController {
+class Register extends AbsController implements \App\Controller\IController {
     use \App\Controller\Traits\SetMessageTrait;
 
     protected $apiAction;

@@ -11,7 +11,9 @@ use App\Controller\AbsController;
 use App\Middleware\InjectableMiddleware;
 use App\Middleware\Html\ResponseOutputMiddleware;
 
-abstract class ViewController extends AbsController implements \App\Controller\IController {
+abstract class ViewController extends AbsController implements \App\Controller\IController {   
+    use \App\Controller\Traits\GetUserTrait;
+
     protected $plates;
     protected $responsefactory;
     protected $template;
@@ -36,12 +38,15 @@ abstract class ViewController extends AbsController implements \App\Controller\I
     protected abstract function setViewParams($request) :array;
 
     protected function controllerResponse($request) {
+        $params = $this->setViewParams($request);
+        $params['user'] = $this->findUser($request);
+        
         return $this->responsefactory->createResponse(
             ResponseFactory::HTML,
             $this->statusCode,
             $this->plates->render(
                 $this->template, 
-                $this->setViewParams($request)
+                $params
             )
         );
     }

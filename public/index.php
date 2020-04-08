@@ -17,10 +17,6 @@ $request = ServerRequestFactory::fromGlobals(
   $_COOKIE,
   $_FILES
 );
-/*
-$jwtHelperMiddleware = new WithJwtRequestMiddleware();
-$request = $jwtHelperMiddleware->handle($request);
-*/
 
 $builder = new ContainerBuilder();
 $builder->addDefinitions('config/container.php');

@@ -1,4 +1,4 @@
-<?php $this->layout('Common/layout', ['title' => 'Register']) ?>
+<?php $this->layout('Common/layout', ['title' => 'Register', 'user' => $user]) ?>
 <h1>Register</h1>
 
 <form action="/register" method="POST"">

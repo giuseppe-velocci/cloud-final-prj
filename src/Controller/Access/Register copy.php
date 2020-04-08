@@ -6,19 +6,19 @@ namespace App\Controller\Access;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use App\Helper\HashMsg;
-use App\Api\Registration\CreateUser;
+use App\Api\Registration\CreateUserApi;
 use App\Middleware\Api\ApiPostRequestMiddleware;
 use App\Middleware\Api\Api2HtmlResponseMiddleware;
 use App\Middleware\Cookie\CookieMiddleware;
 
-use App\Controller\AbsWithMiddlewareController;
+use App\Controller\AbsController;
 use App\Middleware\InjectableMiddleware;
 
-class Register extends AbsWithMiddlewareController{
+class Register extends AbsController{
     protected $createUser;
 
     public function __construct(
-        CreateUser $createUser, 
+        CreateUserApi $createUser, 
         ApiPostRequestMiddleware $requestMiddleware,
         Api2HtmlResponseMiddleware $responseMiddleware
     )

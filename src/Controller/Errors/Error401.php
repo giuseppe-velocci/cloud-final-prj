@@ -5,7 +5,7 @@ namespace App\Controller\Errors;
 use Psr\Http\Message\ServerRequestInterface;
 use League\Plates\Engine;
 
-class Error404 implements \App\Controller\IController {
+class Error401 implements \App\Controller\IController {
     protected $plates;
 
     public function __construct(Engine $plates) {
@@ -14,7 +14,7 @@ class Error404 implements \App\Controller\IController {
 
 
     public function execute(ServerRequestInterface $request) :void {
-        echo $this->plates->render('Errors/404', [
+        echo $this->plates->render('Errors/401', [
            
         ]);
     }

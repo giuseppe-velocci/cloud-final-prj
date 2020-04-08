@@ -20,7 +20,8 @@ class Api2HtmlResponseMiddleware extends AbsResponseMiddleware implements IMiddl
             return $this->responseFactory->createResponse(
                 ResponseFactory::HTML,
                 $response->getStatusCode(), 
-                $response->getBody()->read(100)
+                $response->getBody()->read(512),
+                $response->getHeaders()
             );
         } 
         catch (\InvalidArgumentException $e) 

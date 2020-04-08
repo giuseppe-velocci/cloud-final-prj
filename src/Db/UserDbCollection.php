@@ -23,31 +23,21 @@ class UserDbCollection extends BaseDbCollection {
 	}
 
 
-	public function emailExists(string $email): bool{
-		$filter = ['email'=>$email];
+	public function findByEmail(string $email) :bool {
+		$filter = ['email'=>$this->sanitizer->clean($email)];
 		$options = ['typeMap'=>'User'];
-		$query = new Query($filter, $options);
+        $cursor = $this->select($filter, $options)->toArray();
 
-		$cursor = $this->connection->executeQuery(
-            sprintf("%s.%s", $this->wQuery->getDb(), $this->collection)
-            , $query
-        );
-
-		if(!empty($cursor))
-		{
-            array_map($this->sanitizer->clean, $cursor);
-
-            $this->user = new User(
-                $cursor['_id'],
-                $cursor['firstname'],
-                $cursor['lastname'],
-                $cursor['email'],
-                $cursor['password']
+		if(! empty($cursor)) {
+            $this->mapObj = new User(
+                $cursor[0]->_id,
+                $cursor[0]->firstname,
+                $cursor[0]->lastname,
+                $cursor[0]->email,
+                $cursor[0]->password
             );
-			
-			return true;
-		}
-
-		return false;
+            return true;
+        } 
+        return false;
 	}
 }

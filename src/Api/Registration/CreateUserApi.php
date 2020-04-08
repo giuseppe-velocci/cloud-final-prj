@@ -8,10 +8,11 @@ use App\Api\AbsApi;
 use App\Db\User;
 use App\Db\UserDbCollection;
 use App\Helper\ResponseFactory;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 
-class CreateUser extends AbsApi{
+class CreateUserApi extends AbsApi{
 	protected $config;
     protected $user;
     protected $userDb;
@@ -31,20 +32,30 @@ class CreateUser extends AbsApi{
 		date_default_timezone_set($this->config['timezone']);
     }
 
-    public function execute(string $jsonData) :ResponseInterface {
+
+
+    public function execute(ServerRequestInterface $request) :ResponseInterface {
         // required headers
         $headers = $this->config['headers'];
 
         // get posted data
-        $data = json_decode($jsonData);
+        $post = $request->getParsedBody();
+        if (! isset($post['json'])) {
+            return $this->setResponse(400, 'Bad request.', $headers);
+        }
         
+        $data = json_decode($post['json']);
+       
+        if ($this->userDb->findByEmail($data->email)) {
+            return $this->setResponse(400, 'A user with these credentials is already registered.', $headers);
+        }
+
         if (
             is_null($data->firstname)
             || is_null($data->lastname)
             || is_null($data->email)
             || is_null($data->pwd)
         ) {
-         // echo
             return $this->setResponse(400, 'Missing data. All parameters are needed.', $headers);
         }
 
@@ -69,7 +80,6 @@ class CreateUser extends AbsApi{
         } 
 
         // message if unable to create user
-  //  echo
         return $this->setResponse($code, $message, $headers);
     }
 }

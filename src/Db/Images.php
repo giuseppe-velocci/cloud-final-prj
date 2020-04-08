@@ -17,7 +17,13 @@ class Images extends BaseMapObject{
     protected $required = ['url', 'userId', 'tags'];
 
 
-    public function __construct(string $id, string $url, string $userId, array $tags, ?array $exif=null){
+    public function __construct(
+        $id, 
+        string $url, 
+        string $userId, 
+        array $tags, 
+        ?array $exif=null
+    ){
 		$this->setId($id);
         $this->setUrl($url);
         $this->setUserId($userId);

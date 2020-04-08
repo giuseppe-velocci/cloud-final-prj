@@ -113,9 +113,6 @@ abstract class BaseDbCollection {
      */
     public function select(array $filter, array $options=[]) :CursorInterface {
         $query = new \MongoDB\Driver\Query($filter, $options);
-        return $this->connection->executeQuery(
-            sprintf('%s.%s', $this->connection->getDb(), $this->collection), 
-            $query
-        ); 
+        return $this->wQuery->select($query, $this->collection); 
     }
 }

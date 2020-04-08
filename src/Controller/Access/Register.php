@@ -5,32 +5,30 @@ namespace App\Controller\Access;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use App\Helper\HashMsg;
-use App\Api\Registration\CreateUser;
+use App\Controller\AbsController;
+use App\Api\Registration\CreateUserApi;
+use App\Middleware\InjectableMiddleware;
 use App\Middleware\Api\ApiPostRequestMiddleware;
 use App\Middleware\Api\Api2HtmlResponseMiddleware;
-use App\Middleware\Cookie\CookieMiddleware;
+use App\Middleware\Crypto\HashMiddleware;
 
-use App\Controller\AbsWithMiddlewareController;
-use App\Middleware\InjectableMiddleware;
 
-class Register extends AbsWithMiddlewareController{
-    protected $createUser;
+class Register extends AbsController {
+    use \App\Controller\Traits\SetMessageTrait;
+
+    protected $apiAction;
 
     public function __construct(
-        CreateUser $createUser, 
+        CreateUserApi $apiAction, 
+        HashMiddleware $hashMiddleware,
         ApiPostRequestMiddleware $requestMiddleware,
         Api2HtmlResponseMiddleware $responseMiddleware
-    )
-    {
-        $this->createUser = $createUser;
+    ) {
+        $this->createUser = $apiAction;
 
         $middlewares = [
-            new InjectableMiddleware($requestMiddleware,
-                function ($request) {
-                    return $this->handleRequest($request);
-                }
-            ),
+            new InjectableMiddleware($hashMiddleware),
+            new InjectableMiddleware($requestMiddleware),
             new InjectableMiddleware($responseMiddleware,
                 function($response) {
                     $this->handleResponse($response);
@@ -38,25 +36,16 @@ class Register extends AbsWithMiddlewareController{
             ),
         ];
 
-        parent::__construct(
-            $middlewares
-        );
+        parent::__construct($middlewares);
     }
 
-    protected function exec($request) {
-        $post = $request->getParsedBody();
-        return $this->createUser->execute($post['json']);
+    protected function controllerResponse($request) {
+        return $this->createUser->execute($request);
     }
 
-    protected function handleRequest($request) {
-        $post = $request->getParsedBody();
-        $post['pwd'] = HashMsg::hash($post['pwd']);
-        return $request->withParsedBody($post);
-    }
 
     protected function handleResponse($response) {
-        setcookie('message', $response->getBody()-> read(60));
-        setcookie('code', ''.$response->getStatusCode());
+        $this->setResultMessage($response);
         header('Location: /register');
         exit;
     }

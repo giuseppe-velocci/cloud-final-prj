@@ -31,7 +31,7 @@ use App\Config\Env;
 
 
 //---variable declarations
-$importCmd = 'mongoimport --db {$db} --collection {$collection} --file {$file} --jsonArray';
+$importCmd = 'mongoimport --db %s --collection %s --file %s --jsonArray';
 try {
     $db   = Env::get('DB_NAME');
     $user = Env::get('DB_USER');
@@ -122,11 +122,7 @@ foreach ($scripts AS $s) {
     echo "\nRunning script: $s\n";
     $seeder = require $s;
 
-    $localImportCmd = $importCmd;
-    $localImportCmd = str_replace('{$db}', $seeder['db'], $localImportCmd);
-    $localImportCmd = str_replace('{$collection}', $seeder['collection'], $localImportCmd);
-    $localImportCmd = str_replace('{$file}', $seeder['file'], $localImportCmd);
-
+    $localImportCmd = sprintf($importCmd, $seeder['db'], $seeder['collection'],$seeder['file']);
     echo "\nExecuting: $localImportCmd\n";
 
     data2file($seeder['file'], array2json($seeder['data']));

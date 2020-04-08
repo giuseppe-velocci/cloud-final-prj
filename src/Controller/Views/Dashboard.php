@@ -5,24 +5,27 @@ namespace App\Controller\Views;
 
 use League\Plates\Engine;
 use Psr\Http\Message\ServerRequestInterface;
-use App\Helper\ResponseFactory;
 use App\Controller\ViewController;
+use App\Helper\ResponseFactory;
+use App\Middleware\Auth\NeedsAuthMiddleware;
 use App\Middleware\InjectableMiddleware;
 use App\Middleware\Html\ResponseOutputMiddleware;
 
-class Home extends ViewController implements \App\Controller\IController {
+class Dashboard extends ViewController implements \App\Controller\IController {
     
     public function __construct(
         Engine $plates,
         ResponseFactory $responsefactory,
-        ResponseOutputMiddleware $reponseOutput
+        ResponseOutputMiddleware $reponseOutput,
+        // other middlewares
+        NeedsAuthMiddleware $needsAuth
     ) {
-        $template = 'home';
-        $middlewares = [];
+        $template = 'dashboard';
+        $middlewares = [
+            new InjectableMiddleware($needsAuth)
+        ];
         parent::__construct($template, $plates, $responsefactory, $reponseOutput, $middlewares);
-
     }
-
 
     protected function setViewParams($request) :array{
         return [];

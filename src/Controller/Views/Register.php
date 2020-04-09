@@ -3,24 +3,21 @@ declare(strict_types=1);
 
 namespace App\Controller\Views;
 
-use League\Plates\Engine;
 use Psr\Http\Message\ServerRequestInterface;
-use App\Helper\ResponseFactory;
+use App\Controller\AbsController;
 use App\Controller\ViewController;
 use App\Middleware\InjectableMiddleware;
-use App\Middleware\Html\ResponseOutputMiddleware;
+use App\Helper\ViewControllerDependencies;
 
 class Register extends ViewController implements \App\Controller\IController {
     use \App\Controller\Traits\GetMessageTrait;
 
     public function __construct(
-        Engine $plates,
-        ResponseFactory $responsefactory,
-        ResponseOutputMiddleware $reponseOutput
+        ViewControllerDependencies $view
     ) {
         $template = 'register';
         $middlewares = [];
-        parent::__construct($template, $plates, $responsefactory, $reponseOutput, $middlewares);
+        parent::__construct($template, $view, $middlewares);
     }
 
     protected function setViewParams($request) :array{

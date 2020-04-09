@@ -37,12 +37,12 @@ class Blob {
         $content = fopen($fileToUpload, "r");
 
         //Upload blob
-        try {
+//        try {
             $blobClient->createBlockBlob($this->containerName, basename($fileToUpload), $content);
-        } catch(ServiceException $e) {
+/*        } catch(ServiceException $e) {
             throw $e;
         } finally {
-            fclose($content);
-        }
+ */           fclose($content);
+   //     }
     }
 }

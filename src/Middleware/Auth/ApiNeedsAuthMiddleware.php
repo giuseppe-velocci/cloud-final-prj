@@ -7,24 +7,43 @@ namespace App\Middleware\Auth;
 use App\Middleware\IMiddleware;
 use App\Middleware\AbsRequestMiddleware;
 use Psr\Http\Message\ServerRequestInterface;
+use App\Controller\Access\ValidateLogin;
 use App\Helper\CryptMsg;
 
 
 class ApiNeedsAuthMiddleware extends AbsRequestMiddleware implements IMiddleware{
-    
+    protected $apiCaller;
+    protected $crypt;
+
+    public function __construct(
+        ValidateLogin $apiCaller,
+        CryptMsg $crypt
+    ) {
+        $this->apiCaller = $apiCaller;
+        $this->crypt = $crypt;
+    }
+
     protected function middlewareAction (ServerRequestInterface $request) {
         $headers = $request->getHeaders();
-        
-        // if jwt GET parameter does not exists -> 401
-        if (! array_key_exists('Authorization', $headers)) {
+        $cookies = $request->getCookieParams();
+/*
+
+*/
+        if (! isset($cookies['token']) && ! array_key_exists('Authorization', $headers)) {
             header('Location: /error401');
             exit;
         }
 
-        // else make a call to ValidateLoginApi (from a controller)
+        if (! isset($headers['Authorization'])) {
+            $request = $request->withHeader(
+                'Authorization', 
+                sprintf('Bearer %s', $this->crypt->decrypt($cookies['token'], $this->crypt::nonce()))
+            );
+        } 
 
-        // if response == 200 -> return request as is
-
-        // if response != 200 again 401 page
+        $this->apiCaller->execute($request);
+        
+        // if response == 200 -> return initial request
+        return $request; 
     }
 }

@@ -4,10 +4,8 @@ declare(strict_types=1);
 namespace App\Db;
 
 use App\Db\MongoWQuery;
-use App\Helper\HashMsg;
 use App\Helper\ISanitizer;
 use App\Config\Env;
-use App\Db\User;
 
 class UserDbCollection extends BaseDbCollection {
     protected $collection = 'appusers';

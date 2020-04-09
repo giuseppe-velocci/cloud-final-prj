@@ -6,8 +6,8 @@ namespace App\Controller\Views;
 use Psr\Http\Message\ServerRequestInterface;
 use App\Controller\AbsController;
 use App\Controller\ViewController;
-use App\Middleware\InjectableMiddleware;
 use App\Helper\ViewControllerDependencies;
+use App\Middleware\InjectableMiddleware;
 use App\Middleware\Auth\NeedsAuthMiddleware;
 
 

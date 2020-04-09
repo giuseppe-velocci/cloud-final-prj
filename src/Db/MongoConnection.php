@@ -23,7 +23,6 @@ class MongoConnection {
 
         } catch (\InvalidArgumentException $e) {
             die($e->getMessage());
-            
         }
 
         $connectionString = "mongodb://";

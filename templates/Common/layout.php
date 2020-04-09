@@ -5,7 +5,8 @@
 <body>
     <?php 
         // default links in navbar
-        $btn['Home'] = '/';
+        $btn['Home'] = ['path' => '/', 'public' => true];
+        $btn['Dashboard'] = ['path' => '/dashboard', 'public' => false];
         $this->insert('Common/navbar', ['buttons' => $btn, 'user' => $user]); 
     ?>
     <?=$this->section('content')?>

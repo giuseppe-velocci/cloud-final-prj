@@ -1,10 +1,12 @@
 <!-- links -->
-<?php foreach($buttons AS $text => $url): ?>
-    <a style="display:inline-block;" href="<?= $this->e($url) ?>">
+<?php foreach($buttons AS $text => $data): ?>
+<?php if($data['public'] == true || ! is_null($user)) :?>
+    <a style="display:inline-block;" href="<?= $this->e($data['path']) ?>">
         <button>
             <?= $this->e($text) ?>
         </button>
     </a>
+<?php endif; ?>
 <?php endforeach; ?>
 
 

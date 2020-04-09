@@ -7,7 +7,7 @@ use App\Db\MongoWQuery;
 use App\Helper\ISanitizer;
 use App\Config\Env;
 
-class ImagesDbCollection extends AbsDbCollection{
+class ImagesDbCollection extends BaseDbCollection{
     protected $collection = 'images';
     
     public function __construct(

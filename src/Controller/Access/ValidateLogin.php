@@ -10,7 +10,6 @@ use App\Api\Login\ValidateLoginApi;
 use App\Middleware\InjectableMiddleware;
 use App\Middleware\Api\ApiPostRequestMiddleware;
 use App\Middleware\Api\Api2HtmlResponseMiddleware;
-use App\Middleware\Auth\ApiNeedsAuthMiddleware;
 
 
 class ValidateLogin extends AbsController implements \App\Controller\IController {
@@ -19,14 +18,11 @@ class ValidateLogin extends AbsController implements \App\Controller\IController
     protected $apiAction;
 
     public function __construct(
-        ValidateLoginApi $apiAction,
-        ApiNeedsAuthMiddleware $apiAuth
+        ValidateLoginApi $apiAction
     ) {
         $this->createUser = $apiAction;
 
-        $middlewares = [
-            new InjectableMiddleware($apiAuth)
-        ];
+        $middlewares = [];
 
         parent::__construct($middlewares);
     }

@@ -14,12 +14,11 @@ class ApiController extends AbsController implements \App\Controller\IController
 
     public function __construct(
         AbsApi $apiAction,
-        ResponseOutputMiddleware $reponseOutput
+        ResponseOutputMiddleware $reponseOutput,
+        array $middlewares=[]
     ) {
         $this->apiAction = $apiAction;
-        $middlewares = [
-            new InjectableMiddleware($reponseOutput)
-        ];
+        $middlewares[] = new InjectableMiddleware($reponseOutput);
         parent::__construct($middlewares);
     }
 

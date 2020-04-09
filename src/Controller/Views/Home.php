@@ -3,23 +3,20 @@ declare(strict_types=1);
 
 namespace App\Controller\Views;
 
-use League\Plates\Engine;
 use Psr\Http\Message\ServerRequestInterface;
-use App\Helper\ResponseFactory;
+use App\Controller\AbsController;
 use App\Controller\ViewController;
 use App\Middleware\InjectableMiddleware;
-use App\Middleware\Html\ResponseOutputMiddleware;
+use App\Helper\ViewControllerDependencies;
 
 class Home extends ViewController implements \App\Controller\IController {
     
     public function __construct(
-        Engine $plates,
-        ResponseFactory $responsefactory,
-        ResponseOutputMiddleware $reponseOutput
+        ViewControllerDependencies $view
     ) {
         $template = 'home';
         $middlewares = [];
-        parent::__construct($template, $plates, $responsefactory, $reponseOutput, $middlewares);
+        parent::__construct($template, $view, $middlewares);
 
     }
 

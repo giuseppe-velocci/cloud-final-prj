@@ -3,23 +3,19 @@ declare(strict_types=1);
 
 namespace App\Controller\Errors;
 
-use League\Plates\Engine;
 use Psr\Http\Message\ServerRequestInterface;
-use App\Helper\ResponseFactory;
+use App\Controller\AbsController;
 use App\Controller\ViewController;
+use App\Helper\ViewControllerDependencies;
 use App\Middleware\InjectableMiddleware;
-use App\Middleware\Html\ResponseOutputMiddleware;
 
 class Error401 extends ViewController implements \App\Controller\IController {
     public function __construct(
-        Engine $plates,
-        ResponseFactory $responsefactory,
-        ResponseOutputMiddleware $reponseOutput
+        ViewControllerDependencies $view
     ) {
         $template = 'Errors/401';
         $middlewares = [];
-        parent::__construct($template, $plates, $responsefactory, $reponseOutput, $middlewares);
-
+        parent::__construct($template, $view, $middlewares);
     }
 
 

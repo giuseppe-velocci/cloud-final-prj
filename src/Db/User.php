@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Db;
 
+use App\Helper\Validator;
+
 class User extends BaseMapObject{
 	// obj properties
 	protected $_id;
@@ -12,6 +14,13 @@ class User extends BaseMapObject{
 	protected $password;
 
 	protected $required = ['firstname', 'lastname', 'email', 'password'];
+	protected $dataTypes = [
+		['_id' => Validator::TEXT],
+		['firstname' => Validator::NAME],
+		['lastname'  => Validator::NAME],
+		['email' 	 => Validator::EMAIL], 
+		['password'  => Validator::NAME]
+	];
 
 	// constructor
 	public function __construct(

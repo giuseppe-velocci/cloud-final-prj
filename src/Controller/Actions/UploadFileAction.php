@@ -14,6 +14,7 @@ use App\Middleware\InjectableMiddleware;
 
 class UploadFileAction extends AbsController implements \App\Controller\IController {
     use \App\Controller\Traits\SetMessageTrait;
+    use \App\Controller\Traits\GetCookieTrait;
 
     protected $apiAction;
 
@@ -25,7 +26,11 @@ class UploadFileAction extends AbsController implements \App\Controller\IControl
         $this->apiAction = $apiAction;
 
         $middlewares = [
-            new InjectableMiddleware($apiRequestMiddleware),
+            new InjectableMiddleware($apiRequestMiddleware,
+                function($request) {
+                    return $this->handleRequest($request);
+                }/* */
+            ),
             new InjectableMiddleware($apiResponseMiddleware,
                 function($response) {
                     $this->handleResponse($response);
@@ -39,6 +44,17 @@ class UploadFileAction extends AbsController implements \App\Controller\IControl
 
     protected function controllerResponse($request) {
         return $this->apiAction->execute($request);
+    }
+
+    /**
+     * adds fields for user to current request body (needed to store userId on Image collection)
+     */
+    protected function handleRequest($request) {
+        $cookies = $this->getCookies($request);
+        $postParams = $request->getParsedBody();
+        $postParams['user'] = $cookies['user'];
+
+        return $request->withParsedBody($postParams);
     }
 
 

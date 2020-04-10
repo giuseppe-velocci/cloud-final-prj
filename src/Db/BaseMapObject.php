@@ -30,6 +30,21 @@ class BaseMapObject {
     }
 
     /**
+     * @access protected
+     * @var array $dataTypes List of types for validation. Format: [property => type]
+     */
+    protected $dataTypes;
+
+    /**
+     * Returns the list of required params for this object to be valid.
+     * @access public
+     * @return array List of data types for validation.
+     */
+    public function getDataTypes() {
+        return $this->dataTypes;
+    }
+
+    /**
      * Returns an array with the object's properties and their values
      * 
      * @return array = all properties as key values pair

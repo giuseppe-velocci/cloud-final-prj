@@ -11,10 +11,10 @@ class ImagesDbCollection extends BaseDbCollection{
     protected $collection = 'images';
     
     public function __construct(
-        BaseMapObject $mapObj,
+        Images $mapObj,
         MongoWQuery $wQuery,
         ISanitizer $sanitizer
-	){
+	) {
         parent::__construct(
             $mapObj, $wQuery, $sanitizer
         );

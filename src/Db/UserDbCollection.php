@@ -11,7 +11,7 @@ class UserDbCollection extends BaseDbCollection {
     protected $collection = 'appusers';
    
     public function __construct(
-        BaseMapObject $mapObj,
+        User $mapObj,
         MongoWQuery $wQuery,
         ISanitizer $sanitizer
 	){

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Api;
 
 use App\Helper\ResponseFactory;
+use App\Db\BaseMapObject;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -34,6 +35,13 @@ abstract class AbsApi {
                 'Invalid arguments. Cannot create a valid response.'
             );
         }
+    }
+
+    /**
+     * validation function?
+     */
+    protected function validate(BaseMapObject $mapObject) {
+        
     }
  
     public abstract function execute(ServerRequestInterface $jsonData) :ResponseInterface;

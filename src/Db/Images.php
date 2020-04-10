@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace App\Db;
 
-use App\Db\MongoWQuery;
-use App\Helper\ISanitizer;
-use App\Config\Env;
+use App\Helper\Validator;
 
 class Images extends BaseMapObject{ 
     protected $_id;
@@ -14,14 +12,20 @@ class Images extends BaseMapObject{
     protected $tags;
     protected $exif;
 
-    protected $required = ['url', 'userId', 'tags'];
-
+    protected $required = ['url', 'userId'];
+    protected $dataTypes = [
+		['_id'    => Validator::TEXT],
+		['url'    => Validator::URL],
+		['userId' => Validator::TEXT],
+		['tags'   => Validator::NAME], 
+		['exif'   => Validator::TEXT]
+	];
 
     public function __construct(
         $id = null, 
         string $url = '', 
         string $userId = '', 
-        array $tags = [], 
+        array  $tags = [], 
         ?array $exif = null
     ){
 		$this->setId($id);
@@ -33,7 +37,7 @@ class Images extends BaseMapObject{
             $this->setExif($exif);
 	}
 
-    public function getId(): string {
+    public function getId() {
         return $this->_id;
     }
     public function setId($id) {

@@ -6,11 +6,17 @@ namespace App\Controller\Traits;
 
 use Psr\Http\Message\ResponseInterface;
 use App\Helper\CryptMsg;
+use App\Config\Env;
 
 trait SetCookieTrait {
-    protected $toEncrypt = ['token', 'user'];
 
     protected function setLoginCookies (ResponseInterface $response) {
+        try {
+            $toEncrypt = explode(',', Env::get('COOKIES_TO_ENCRYPT'));
+        } catch (\InvalidArgumentException $e) {
+            die($e->getMessage());
+        }
+
         $body = $response->getBody();
         $json = json_decode($body->getContents(), true);
 
@@ -23,7 +29,7 @@ trait SetCookieTrait {
             foreach($json['storage'] AS $name => $cookie) {
                  setcookie(
                     $name,
-                    in_array($name, $this->toEncrypt) ? $crypt->encrypt($cookie, $crypt:: nonce()) : $cookie,
+                    in_array($name, $toEncrypt) ? $crypt->encrypt($cookie, $crypt:: nonce()) : $cookie,
                     0,
                     '',
                     '',

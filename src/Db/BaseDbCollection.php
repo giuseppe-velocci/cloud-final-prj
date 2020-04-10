@@ -59,7 +59,8 @@ abstract class BaseDbCollection {
      */
     protected function setupDoc(bool $withId = false) :array{
         $data = $this->mapObj->toArray();
-        unset($data['required']);
+        unset($data['required']); // rm required and dataTypes params
+        unset($data['dataTypes']);
 
         foreach ($this->mapObj->getRequired() AS $k) {
              if (empty($data[$k]))

@@ -13,8 +13,8 @@ use App\Controller\AbsController;
 use App\Middleware\InjectableMiddleware;
 
 class Login extends AbsController implements \App\Controller\IController {
-    use \App\Controller\Traits\SetMessageTrait;
-    use \App\Controller\Traits\SetCookieTrait;
+    use \App\Traits\SetMessageTrait;
+    use \App\Traits\SetCookieTrait;
 
     protected $apiAction;
 

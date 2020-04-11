@@ -13,7 +13,7 @@ use App\Middleware\Api\Api2HtmlResponseMiddleware;
 
 
 class ValidateLogin extends AbsController implements \App\Controller\IController {
-    use \App\Controller\Traits\SetMessageTrait;
+    use \App\Traits\SetMessageTrait;
 
     protected $apiAction;
 

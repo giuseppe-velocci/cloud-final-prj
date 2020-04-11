@@ -3,3 +3,4 @@
 !*.template.env
 !*.encryptionKey.key
 .phpunit.result.cache
+!/uploads/*.txt

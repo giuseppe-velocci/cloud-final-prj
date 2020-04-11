@@ -9,6 +9,7 @@ use App\Helper\HashMsg;
 use App\Api\Upload\UploadFileApi;
 use App\Middleware\Api\ApiPostRequestMiddleware;
 use App\Middleware\Api\Api2HtmlResponseMiddleware;
+use App\Middleware\Auth\NeedsAuthMiddleware;
 use App\Controller\AbsController;
 use App\Middleware\InjectableMiddleware;
 
@@ -20,16 +21,18 @@ class UploadFileAction extends AbsController implements \App\Controller\IControl
 
     public function __construct(
         UploadFileApi $apiAction, 
+        NeedsAuthMiddleware $auth,
         ApiPostRequestMiddleware $apiRequestMiddleware,
         Api2HtmlResponseMiddleware $apiResponseMiddleware
     ) {
         $this->apiAction = $apiAction;
 
         $middlewares = [
+            new InjectableMiddleware($auth),
             new InjectableMiddleware($apiRequestMiddleware,
                 function($request) {
                     return $this->handleRequest($request);
-                }/* */
+                }
             ),
             new InjectableMiddleware($apiResponseMiddleware,
                 function($response) {

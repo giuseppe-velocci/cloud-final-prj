@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Api\Login;
 
 use \Firebase\JWT\JWT;
+use App\Config\Env;
 use App\Db\MongoConnection;
 use App\Api\AbsApi;
 use App\Db\User;
@@ -16,7 +17,8 @@ use Psr\Http\Message\ServerRequestInterface;
 // date_default_timezone_set('Europe/Rome');
 class LoginApi extends AbsApi {
 	protected $config;
-    protected $userDb;
+	protected $userDb;
+	protected $cookieParam;
 
 	public function __construct(
         UserDbCollection $userDb, 
@@ -24,6 +26,12 @@ class LoginApi extends AbsApi {
 	) {
         $this->userDb = $userDb;
 		$this->responseFactory = $responseFactory;
+
+		try {
+            $this->cookieParam = Env::get('HTTP_COOKIE_PARAM');
+        } catch (\InvalidArgumentException $e) {
+            die($e->getMessage());
+        }
 		
 		chdir(dirname(__DIR__, 3));
 		$this->config = require_once 'config/api.php';
@@ -70,7 +78,7 @@ class LoginApi extends AbsApi {
 		
 		return $this->setResponse(
 			200, 
-			['msg'=>"Successful login!", 'storage'=>['user' => $user, 'token'=>$jwt]], 
+			['msg'=>"Successful login!", $this->cookieParam=>['user' => $user, 'token'=>$jwt]], 
 			$headers
 		);
 	}

@@ -1,22 +1,21 @@
-.
 ├── config
 ├── dbseed
+├── __old
 ├── public
 │   ├── css
 │   ├── imgs
 │   └── js
 ├── src
 │   ├── Api
-│   │   ├── Login
-│   │   └── Registration
 │   ├── Config
 │   ├── Controller
-│   │   ├── Errors
-│   │   └── Views
 │   ├── Db
-│   └── Img
+│   ├── Helper
+│   ├── Img
+│   ├── Middleware
+│   └── Traits
 ├── templates
 │   ├── Common
 │   └── Errors
 ├── tests
-└── users
+└── uploads

@@ -13,8 +13,8 @@ use App\Controller\AbsController;
 use App\Middleware\InjectableMiddleware;
 
 class UploadFileAction extends AbsController implements \App\Controller\IController {
-    use \App\Controller\Traits\SetMessageTrait;
-    use \App\Controller\Traits\GetCookieTrait;
+    use \App\Traits\SetMessageTrait;
+    use \App\Traits\GetCookieTrait;
 
     protected $apiAction;
 

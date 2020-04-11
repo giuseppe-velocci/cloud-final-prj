@@ -12,7 +12,7 @@ use App\Middleware\Auth\NeedsAuthMiddleware;
 
 
 class PhotoManager extends ViewController implements \App\Controller\IController {
-    use \App\Controller\Traits\GetMessageTrait;
+    use \App\Traits\GetMessageTrait;
 
     public function __construct(
         ViewControllerDependencies $view,

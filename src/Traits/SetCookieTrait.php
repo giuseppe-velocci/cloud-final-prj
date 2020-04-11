@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Traits;
+namespace App\Traits;
 
 use Psr\Http\Message\ResponseInterface;
 use App\Helper\CryptMsg;

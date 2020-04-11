@@ -14,7 +14,7 @@ use App\Middleware\Crypto\HashMiddleware;
 
 
 class Register extends AbsController implements \App\Controller\IController {
-    use \App\Controller\Traits\SetMessageTrait;
+    use \App\Traits\SetMessageTrait;
 
     protected $apiAction;
 

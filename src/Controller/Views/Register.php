@@ -10,7 +10,7 @@ use App\Middleware\InjectableMiddleware;
 use App\Helper\ViewControllerDependencies;
 
 class Register extends ViewController implements \App\Controller\IController {
-    use \App\Controller\Traits\GetMessageTrait;
+    use \App\Traits\GetMessageTrait;
 
     public function __construct(
         ViewControllerDependencies $view

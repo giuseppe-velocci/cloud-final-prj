@@ -10,7 +10,7 @@ use App\Middleware\InjectableMiddleware;
 use App\Helper\ViewControllerDependencies;
 
 abstract class ViewController extends AbsController implements \App\Controller\IController {   
-    use \App\Controller\Traits\GetUserTrait;
+    use \App\Traits\GetUserTrait;
 
     protected $view;
     protected $template;

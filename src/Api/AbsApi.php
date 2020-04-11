@@ -37,12 +37,6 @@ abstract class AbsApi {
         }
     }
 
-    /**
-     * validation function?
-     */
-    protected function validate(BaseMapObject $mapObject) {
-        
-    }
  
     public abstract function execute(ServerRequestInterface $jsonData) :ResponseInterface;
 }

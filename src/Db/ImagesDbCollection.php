@@ -18,6 +18,22 @@ class ImagesDbCollection extends BaseDbCollection{
         parent::__construct(
             $mapObj, $wQuery, $sanitizer
         );
-	}
+    }
+    
+    /**
+     * @access public
+     * Select all images related to current user
+     */
+    public function selectAllByUser(string $userId) :array{
+        $filter = [
+            'userId' => $this->sanitizer->clean(
+                'ObjectId("'.$userId.')'
+            )
+        ];
+		$options = ['typeMap'=>'Images'];
+        $cursor = $this->select($filter, $options)->toArray();
+
+        return $cursor;
+    }
 
 }

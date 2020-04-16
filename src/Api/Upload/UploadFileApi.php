@@ -12,6 +12,8 @@ use App\Img\Blob;
 use App\Helper\ResponseFactory;
 use App\Helper\FileValidator;
 use App\Img\ImgTransform;
+use App\Img\CloudImagePath;
+use App\Img\ComputerVision;
 // use App\Img\UploadException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -26,12 +28,16 @@ class UploadFileApi extends AbsApi {
 
     public function __construct(
         Blob $blob,
+        ComputerVision $computerVision,
+        CloudImagePath $pathBuilder,
         FileValidator $validator,
         ImagesDbCollection $imagesDb,
         UserDbCollection $userDb,
         ResponseFactory $responseFactory
     ) {
         // get database connection
+        $this->computerVision = $computerVision;
+        $this->pathBuilder = $pathBuilder;
         $this->validator = $validator;
         $this->userDb = $userDb;
         $this->imagesDb = $imagesDb;
@@ -101,6 +107,15 @@ class UploadFileApi extends AbsApi {
         return $thumbnailName;
     }
 
+    /**
+     * Computer vision
+     */
+    protected function analyzeImage(string $filename) :array {
+        return $this->computerVision->getAnalysis(
+            $this->pathBuilder->getFullPath($filename)
+        );
+    }
+
 
     /**
      * Main upload function
@@ -128,18 +143,29 @@ class UploadFileApi extends AbsApi {
             
 
             // store img on blob (with its thumbnail)
-            $this->storeOnCloud($filepath);
+           $this->storeOnCloud($filepath);
         //    $this->storeOnCloud($thumbnailName);
             
+
             // perform computer vision and store given tags..
-
-
+            $cvResponse = $this->analyzeImage($file->getClientFilename());
+            $tags = [];
+            foreach ($cvResponse['categories'] AS $v) {
+                if ($v['score'] > $this->computerVision->getThreshold()) {
+                    $tags[] = $v['name'];
+                }
+            }
+/*
+var_dump($cvResponse);
+var_dump($tags);
+die();
+*/
             // setup Image object
             $this->getUserId($data->user);
             // which url? Maybe from blob
             $this->imagesDb->mapObj->setUrl($file->getClientFilename()); 
             $this->imagesDb->mapObj->setUserId($this->userDb->mapObj->getId());
-            $this->imagesDb->mapObj->setTags([]); // tags?
+            $this->imagesDb->mapObj->setTags($tags); // tags?
             $this->imagesDb->mapObj->setExif([]); // exif?
 
             // now store on db

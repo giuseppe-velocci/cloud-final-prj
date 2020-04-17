@@ -1,6 +1,10 @@
 <?php
 declare(strict_types=1);
 
+chdir(__DIR__);
+
+require "../vendor/autoload.php";
+
 use App\Db\Images;
 use App\Config\Env;
 
@@ -24,5 +28,4 @@ $seeder = [
         new Images('2', 'blob/img-2.url', 'user10', ["person", "sea"])
     ]
 ];
-
 return $seeder;

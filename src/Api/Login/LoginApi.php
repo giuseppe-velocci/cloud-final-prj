@@ -28,7 +28,8 @@ class LoginApi extends AbsApi {
 		$this->responseFactory = $responseFactory;
 
 		try {
-            $this->cookieParam = Env::get('HTTP_COOKIE_PARAM');
+			$this->cookieParam = Env::get('HTTP_COOKIE_PARAM');
+			
         } catch (\InvalidArgumentException $e) {
             die($e->getMessage());
         }

@@ -15,11 +15,11 @@ class User extends BaseMapObject{
 
 	protected $required = ['firstname', 'lastname', 'email', 'password'];
 	protected $dataTypes = [
-		['_id' => Validator::TEXT],
-		['firstname' => Validator::NAME],
-		['lastname'  => Validator::NAME],
-		['email' 	 => Validator::EMAIL], 
-		['password'  => Validator::NAME]
+		'_id' => Validator::TEXT,
+		'firstname' => Validator::NAME,
+		'lastname'  => Validator::NAME,
+		'email' 	 => Validator::EMAIL, 
+		'password'  => Validator::NAME
 	];
 
 	// constructor

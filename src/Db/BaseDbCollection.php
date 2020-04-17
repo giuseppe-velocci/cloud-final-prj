@@ -5,6 +5,8 @@ namespace App\Db;
 
 use App\Helper\ISanitizer;
 use MongoDB\Driver\CursorInterface;
+use App\Helper\Validator;
+
 
 abstract class BaseDbCollection {
     /**
@@ -58,7 +60,9 @@ abstract class BaseDbCollection {
      * @return ?array = nullable array. If some data is missing it will return null
      */
     protected function setupDoc(bool $withId = false) :array{
-        $data = $this->mapObj->toArray();
+        Validator::validate($this->mapObj); // throws exceptions
+
+        $data = $this->mapObj->toArray(); // throws error
         unset($data['required']); // rm required and dataTypes params
         unset($data['dataTypes']);
 

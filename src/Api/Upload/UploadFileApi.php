@@ -173,6 +173,7 @@ die();
             if (! $this->imagesDb->executeQueries()) {
                 return $this->setResponse(500, 'Unable to store images information.', $headers);
             }
+            
         // local upload errors
         } catch (UploadedFileErrorException $e) {
             return $this->setResponse(400, $e->getMessage(), $headers);

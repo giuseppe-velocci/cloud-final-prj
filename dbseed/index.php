@@ -68,13 +68,20 @@ var_dump($returnVal);
  */
 function array2json(array $data): string {
     $json = '[';
-    foreach ($data AS $d) {
-        if ($d instanceof BaseMapObject)
-            $d = $d->toArray();
-        
-        $json .= json_encode($d) . ',';
+
+    try {
+        foreach ($data AS $d) {
+            if ($d instanceof BaseMapObject)
+                $d = $d->toArray();
+            
+            $json .= json_encode($d) . ',';
+        }
+        $json = substr($json, 0, -1);
+
+    } catch (\InvalidArgumentException $e) {
+        die($e->getMessage());
     }
-    $json = substr($json, 0, -1);
+
     $json .= ']';
     return $json;
 }
@@ -90,6 +97,7 @@ function data2file(string $filename, string $data): bool {
     if (file_exists($filename)) {
         return false;
     }
+echo 'Writing ' . $filename;
 
     $file = fopen($filename, 'w');
     if (! $file) {
@@ -122,14 +130,14 @@ foreach ($scripts AS $s) {
     echo "\nRunning script: $s\n";
     $seeder = require $s;
 
+    echo 'Waiting for data to be json formatted...';
+    data2file($seeder['file'], array2json($seeder['data']));
+
     $localImportCmd = sprintf($importCmd, $seeder['db'], $seeder['collection'],$seeder['file']);
     echo "\nExecuting: $localImportCmd\n";
 
-    data2file($seeder['file'], array2json($seeder['data']));
-
     echo "\nAwaiting connection...\n";
-
-    
+  
     try {
         $driver->getConnection();
         cmdExec($localImportCmd) . "\n";

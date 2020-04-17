@@ -14,11 +14,11 @@ class Images extends BaseMapObject{
 
     protected $required = ['url', 'userId'];
     protected $dataTypes = [
-		['_id'    => Validator::TEXT],
-		['url'    => Validator::URL],
-		['userId' => Validator::TEXT],
-		['tags'   => Validator::NAME], 
-		['exif'   => Validator::TEXT]
+		'_id'    => Validator::TEXT,
+		'url'    => Validator::URL,
+		'userId' => Validator::TEXT,
+		'tags'   => Validator::NAME, 
+		'exif'   => Validator::TEXT
 	];
 
     public function __construct(

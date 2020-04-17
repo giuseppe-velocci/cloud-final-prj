@@ -27,6 +27,7 @@ class MongoWQuery {
         $this->wConcern = $wConcern;
         try {
             $this->db = is_null($db) ? Env::get('DB_NAME') : $db;
+            
         } catch (\InvalidArgumentException $e)  {
             die($e->getMessage());
         }
@@ -62,6 +63,7 @@ class MongoWQuery {
     public function execute(string $collection) {
         try  {
             $result = $this->connection->executeBulkWrite("$this->db.$collection", $this->bulk, $this->wConcern);
+        
         } catch (MongoDB\Driver\Exception\BulkWriteException $e) {
             $result = $e->getWriteResult();
         
@@ -82,6 +84,10 @@ class MongoWQuery {
                     $writeError->getCode()
                 );
             }
+        } catch (\MongoDB\Driver\Exception\ConnectionTimeoutException $e) {
+            printf("Connection error: %s\n", $e->getMessage());
+            exit;
+
         } catch (MongoDB\Driver\Exception\Exception $e) {
             printf("Other error: %s\n", $e->getMessage());
             exit;
@@ -91,9 +97,19 @@ class MongoWQuery {
     
 
     public function select(Query $query, string $collection) :CursorInterface  {
-        return $this->connection->executeQuery(
-            sprintf('%s.%s', $this->db, $collection),
-            $query
-        );
+        try {
+            return $this->connection->executeQuery(
+                sprintf('%s.%s', $this->db, $collection),
+                $query
+            );
+        } catch (\MongoDB\Driver\Exception\ConnectionTimeoutException $e) {
+            printf("Connection error: %s\n", $e->getMessage());
+            exit;
+
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+            printf("Driver error: %s\n", $e->getMessage());
+            exit;
+        }
+        
     }
 }

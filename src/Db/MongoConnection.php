@@ -43,14 +43,13 @@ class MongoConnection {
 
     public function getConnection() : \MongoDB\Driver\Manager {
         try {
-// echo $this->connectionString."\n";
             $connection = new \MongoDB\Driver\Manager($this->connectionString);
-// var_dump($connection);
+
         } catch (\MongoDB\Driver\Exception\ConnectionException $e) { // check exception type
-            die($e);
+            die($e->getMessage());
 
         } catch(\MongoDB\Driver\Exception\AuthenticationException $e) {
-            die($e);
+            die($e->getMessage());
         }
 
         return $connection;

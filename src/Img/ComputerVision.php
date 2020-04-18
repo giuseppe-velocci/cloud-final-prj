@@ -12,7 +12,7 @@ use MicrosoftAzure\Storage\Common\Exceptions\InvalidArgumentTypeException;
 class ComputerVision {
     protected $url;
     protected $key;
-    protected $scoreThreshold = 0.79;
+    protected $scoreThreshold = 0.5;
 
     protected $error500code = [
         'FailedToProcess',

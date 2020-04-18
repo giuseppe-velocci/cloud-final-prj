@@ -168,7 +168,9 @@ die();
             $this->imagesDb->mapObj->setTags($tags); // tags?
             $this->imagesDb->mapObj->setExif([]); // exif?
 
-            // now store on db
+/*            print_r($this->imagesDb->mapObj->toArray());
+exit;
+ */           // now store on db
             $this->imagesDb->setupQuery('insert');
             if (! $this->imagesDb->executeQueries()) {
                 return $this->setResponse(500, 'Unable to store images information.', $headers);

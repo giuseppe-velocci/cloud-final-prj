@@ -6,7 +6,9 @@ namespace App\Helper;
 use App\Db\BaseMapObject;
 
 class Validator {
+    const MONGOID   = 'mongoid';
     const URL       = 'url';
+    const FILENAME  = 'filename';
     const TEXT      = 'string';
     const NAME      = 'name';
     const EMAIL     = 'email';
@@ -39,13 +41,19 @@ class Validator {
 
            // then cycle
             if ($type == self::NAME) {
-                self::validName($name, $data[$name]);
-
-            } elseif ($type == self::URL) {
-                self::validUrl($name, $data[$name]);
+                if (is_array($data[$name])) {
+                    foreach ($data[$name] AS $v) {
+                        self::validName($name, $v);
+                    }
+                } else {
+                    self::validName($name, $data[$name]);
+                }
 
             } elseif ($type == self::TEXT) {
                 self::validText($name, $data[$name]);
+            
+            } elseif ($type == self::MONGOID) {
+                self::validMongoId($name, $data[$name]);
 
             } elseif ($type == self::EMAIL) {
                 self::validEmail($name, $data[$name]);
@@ -55,6 +63,12 @@ class Validator {
 
             } elseif ($type == self::FLOAT) {
                 self::validFloat($name, $data[$name]);
+
+            } elseif ($type == self::URL) {
+                self::validUrl($name, $data[$name]);
+
+            } elseif ($type == self::FILENAME) {
+                self::validFilename($name, $data[$name]);
 
             } else {
                 throw new \InvalidArgumentException("Invalid data type declared for $name");
@@ -83,16 +97,27 @@ class Validator {
      * @return void
      */
     protected static function validName(string $name, $value) :void {
-        if (is_array($value)) {
-            foreach ($value AS $v) {
-                self::validName($name, $v);
-            }
-        }
-
         if (preg_match('/\W+/i', $value) == 1) {
             throw new \InvalidArgumentException(self::stdErrorMessage($name));
         }
     }
+
+
+/**
+     * @access protected
+     * Name validation (also takes array as values)
+     * Throws \InvalidArgumentException
+     * 
+     * @param string $name Parameter name
+     * @param mixed $value Parameter value to be validated
+     * @return void
+     */
+    protected static function validMongoId(string $name, $value) :void {
+        if (! is_object($value) || preg_match('/\W+/i', $value->__toString()) == 1) {
+            throw new \InvalidArgumentException(self::stdErrorMessage($name));
+        }
+    }
+
 
     /**
      * @access protected
@@ -105,6 +130,22 @@ class Validator {
      */
     protected static function validUrl(string $name, $value) :void {
         if (! filter_var($value, FILTER_VALIDATE_URL)) {
+            throw new \InvalidArgumentException(self::stdErrorMessage($name));
+        }
+    }
+
+
+    /**
+     * @access protected
+     * Validate filename params
+     * Throws \InvalidArgumentException
+     * 
+     * @param string $name Parameter name
+     * @param mixed $value Parameter value to be validated
+     * @return void
+     */
+    protected static function validFilename(string $name, $value) :void {
+        if (! preg_match('/^\w+\.[a-z]+$/', $value)) {
             throw new \InvalidArgumentException(self::stdErrorMessage($name));
         }
     }

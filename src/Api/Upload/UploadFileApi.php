@@ -92,7 +92,7 @@ class UploadFileApi extends AbsApi {
                 )
             );
         }
-        $filepath = sprintf("$this->folder/%s", $filepath);
+        $filepath = sprintf("$this->folder/%s_%s", uniqid(), $filepath);
         $file->moveTo($filepath);
         return $filepath;
     }
@@ -148,29 +148,23 @@ class UploadFileApi extends AbsApi {
             
 
             // perform computer vision and store given tags..
-            $cvResponse = $this->analyzeImage($file->getClientFilename());
+            $cvResponse = $this->analyzeImage(basename($filepath));
             $tags = [];
             foreach ($cvResponse['categories'] AS $v) {
                 if ($v['score'] > $this->computerVision->getThreshold()) {
                     $tags[] = $v['name'];
                 }
             }
-/*
-var_dump($cvResponse);
-var_dump($tags);
-die();
-*/
+
             // setup Image object
             $this->getUserId($data->user);
             // which url? Maybe from blob
-            $this->imagesDb->mapObj->setUrl($file->getClientFilename()); 
+            $this->imagesDb->mapObj->setUrl(basename($filepath)); 
             $this->imagesDb->mapObj->setUserId($this->userDb->mapObj->getId());
             $this->imagesDb->mapObj->setTags($tags); // tags?
             $this->imagesDb->mapObj->setExif([]); // exif?
 
-/*            print_r($this->imagesDb->mapObj->toArray());
-exit;
- */           // now store on db
+          // now store on db
             $this->imagesDb->setupQuery('insert');
             if (! $this->imagesDb->executeQueries()) {
                 return $this->setResponse(500, 'Unable to store images information.', $headers);

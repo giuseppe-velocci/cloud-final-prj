@@ -14,9 +14,9 @@ class Images extends BaseMapObject{
 
     protected $required = ['url', 'userId'];
     protected $dataTypes = [
-		'_id'    => Validator::TEXT,
-		'url'    => Validator::URL,
-		'userId' => Validator::TEXT,
+		'_id'    => Validator::MONGOID,
+		'url'    => Validator::FILENAME,
+		'userId' => Validator::MONGOID,
 		'tags'   => Validator::NAME, 
 		'exif'   => Validator::TEXT
 	];

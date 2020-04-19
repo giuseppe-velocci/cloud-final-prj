@@ -91,7 +91,11 @@ abstract class BaseDbCollection {
      * @return void
      */
     public function setupQuery(string $cmd, ?array $filter = null) :void {
-        $doc = $this->setupDoc();
+        $doc = [];
+        if ($cmd != 'delete') {
+            $doc = $this->setupDoc();
+        }
+        
         if ($cmd == 'update') 
             $doc = ['$set' => $doc];
 

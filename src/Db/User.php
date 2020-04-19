@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Db;
 
 use App\Helper\Validator;
+use MongoDB\BSON\ObjectId;
 
 class User extends BaseMapObject{
 	// obj properties
@@ -18,13 +19,13 @@ class User extends BaseMapObject{
 		'_id' => Validator::MONGOID,
 		'firstname' => Validator::NAME,
 		'lastname'  => Validator::NAME,
-		'email' 	 => Validator::EMAIL, 
-		'password'  => Validator::NAME
+		'email' 	=> Validator::EMAIL, 
+		'password'  => Validator::TEXT
 	];
 
 	// constructor
 	public function __construct(
-		$id = '', 
+		ObjectId $id = null, 
 		string $firstname = '',
 		string $lastname = '',
 		string $email = '',
@@ -73,15 +74,14 @@ class User extends BaseMapObject{
 		$this->password = $password;
 	}
 
-	public function emailExists(string $email): bool{
+	public function emailExists(string $email): bool {
 		$filter = ['email'=>$email];
 		$options = ['typeMap'=>'User'];
 		$query = new Query($filter, $options);
 
 		$cursor = $this->connection->executeQuery('cloudPrj.User', $query);
 
-		if(!empty($cursor))
-		{
+		if(! empty($cursor)) {
 			$this->id = $cursor['_id'];
 			$this->firstname = $cursor['firstname'];
 			$this->lastname = $cursor['lastname'];

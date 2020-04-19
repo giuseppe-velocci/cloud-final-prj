@@ -159,7 +159,7 @@ class UploadFileApi extends AbsApi {
             $this->imagesDb->mapObj->setUrl(basename($filepath)); 
             $this->imagesDb->mapObj->setUserId($this->userDb->mapObj->getId());
             $this->imagesDb->mapObj->setTags($tags); // tags?
-            $this->imagesDb->mapObj->setExif([]); // exif?
+            $this->imagesDb->mapObj->setExif([]);   // exif?
 
           // now store on db
             $this->imagesDb->setupQuery('insert');
@@ -178,21 +178,12 @@ class UploadFileApi extends AbsApi {
         } catch (ServiceException $e) {
             return $this->setResponse(500, $e->getMessage(), $headers);
 
+        // app errors
         } catch (\InvalidArgumentException $e) {
             return $this->setResponse(400, $e->getMessage(), $headers);
 
         } catch (\Exception $e) {
             return $this->setResponse(500, $e->getMessage(), $headers);
-        
-        // in the end ALWAYS remove the uploaded file(s)
-        } finally {
-            /*if (file_exists($filepath)) {
-                unlink($filepath);
-            }
-            if (isset($thumbnailName) && file_exists($thumbnailName)) {
-                unlink($thumbnailName);
-            }
-            */
         }
         }
         return $this->setResponse(200, 'Successful Upload!', $headers);

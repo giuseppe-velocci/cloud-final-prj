@@ -8,11 +8,10 @@ use App\Config\Env;
 use App\Api\AbsApi;
 use App\Db\UserDbCollection;
 use App\Db\ImagesDbCollection;
-use App\Img\Blob;
 use App\Helper\ResponseFactory;
 use App\Helper\FileValidator;
+use App\Img\Blob;
 use App\Img\ImgTransform;
-use App\Img\CloudImagePath;
 use App\Img\ComputerVision;
 // use App\Img\UploadException;
 use Psr\Http\Message\ServerRequestInterface;
@@ -29,7 +28,6 @@ class UploadFileApi extends AbsApi {
     public function __construct(
         Blob $blob,
         ComputerVision $computerVision,
-        CloudImagePath $pathBuilder,
         FileValidator $validator,
         ImagesDbCollection $imagesDb,
         UserDbCollection $userDb,
@@ -37,7 +35,6 @@ class UploadFileApi extends AbsApi {
     ) {
         // get database connection
         $this->computerVision = $computerVision;
-        $this->pathBuilder = $pathBuilder;
         $this->validator = $validator;
         $this->userDb = $userDb;
         $this->imagesDb = $imagesDb;
@@ -112,7 +109,7 @@ class UploadFileApi extends AbsApi {
      */
     protected function analyzeImage(string $filename) :array {
         return $this->computerVision->getAnalysis(
-            $this->pathBuilder->getFullPath($filename)
+            $this->blob->generateBlobDownloadLinkWithSAS($filename)
         );
     }
 
@@ -189,10 +186,10 @@ class UploadFileApi extends AbsApi {
         
         // in the end ALWAYS remove the uploaded file(s)
         } finally {
-            if (file_exists($filepath)) {
+            /*if (file_exists($filepath)) {
                 unlink($filepath);
             }
-          /*  if (isset($thumbnailName) && file_exists($thumbnailName)) {
+            if (isset($thumbnailName) && file_exists($thumbnailName)) {
                 unlink($thumbnailName);
             }
             */

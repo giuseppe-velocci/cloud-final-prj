@@ -22,7 +22,7 @@ class UserDbCollection extends BaseDbCollection {
 
 
 	public function findByEmail(string $email) :bool {
-		$filter = ['email'=>$this->sanitizer->clean($email)];
+        $filter  = ['email'=>$this->sanitizer->clean($email)];
 		$options = ['typeMap'=>'User'];
         $cursor = $this->select($filter, $options)->toArray();
 

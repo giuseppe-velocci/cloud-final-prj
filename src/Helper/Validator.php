@@ -145,7 +145,8 @@ class Validator {
      * @return void
      */
     protected static function validFilename(string $name, $value) :void {
-        if (! preg_match('/^\w+\.[a-z]+$/', $value)) {
+        // if (! preg_match('/^\w+\.[a-z]+$/', $value)) {
+        if (! preg_match('/^[a-zA-Z0-9\.\_\-]+$/', $value)) {
             throw new \InvalidArgumentException(self::stdErrorMessage($name));
         }
     }

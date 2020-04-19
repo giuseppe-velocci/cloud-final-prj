@@ -14,6 +14,7 @@ class CloudImagePath {
             $container = Env::get('AZURE_CONTAINER');
 
             $this->basePath = "https://$account.blob.core.windows.net/$container/";
+        
         } catch (\InvalidArgumentException $e) {
             die($e->getMessage());
         }        

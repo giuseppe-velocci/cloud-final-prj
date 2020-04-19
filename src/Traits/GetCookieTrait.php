@@ -10,7 +10,7 @@ use App\Config\Env;
 
 
 trait GetCookieTrait {
-    protected function getCookies (ServerRequestInterface $response):array {
+    protected function getCookies (ServerRequestInterface $request):array {
         try {
             $toEncrypt = explode(',', Env::get('COOKIES_TO_ENCRYPT'));
         } catch (\InvalidArgumentException $e) {
@@ -18,7 +18,7 @@ trait GetCookieTrait {
         }
         
         $crypt = CryptMsg::instance();
-        $cookies = $response->getCookieParams();
+        $cookies = $request->getCookieParams();
 
         foreach($cookies AS $name => $value) {
             if (in_array($name, $toEncrypt)) {

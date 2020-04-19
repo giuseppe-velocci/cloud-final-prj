@@ -24,7 +24,7 @@ class ValidateLoginApi {
 		
 		chdir(dirname(__DIR__, 3));
 		$this->config = require_once 'config/api.php';
-		date_default_timezone_set($this->config['timezone']);
+        date_default_timezone_set($this->config['timezone']);
     }
     
     

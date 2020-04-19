@@ -71,7 +71,9 @@ abstract class BaseDbCollection {
                 throw new \InvalidArgumentException(sprintf("Missing argument for %s", $k));
         }
 
-        array_map($this->sanitizer->clean, $data);
+        foreach($data AS $k => $v) {
+            $data[$k] = $this->sanitizer->clean($v);
+        }
 
         if (! $withId && array_key_exists('_id', $data)) {
             unset($data['_id']);

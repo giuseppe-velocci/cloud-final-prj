@@ -7,20 +7,32 @@ use App\Config\Env;
 use MicrosoftAzure\Storage\Blob\BlobRestProxy;
 use MicrosoftAzure\Storage\Common\Exceptions\ServiceException;
 use MicrosoftAzure\Storage\Common\Exceptions\InvalidArgumentTypeException;
+// to delete files
+use MicrosoftAzure\Storage\Blob\BlobSharedAccessSignatureHelper;
+use MicrosoftAzure\Storage\Common\Internal\StorageServiceSettings;
+use MicrosoftAzure\Storage\Common\Internal\Resources;
 
+
+
+// https://stackoverflow.com/questions/60715046/how-to-retrieve-images-from-azure-blob-storage-and-display-on-website-with-php
 class Blob {
     protected $connectionString;
-    protected $containerName;
+    protected $container;
 
     // 
-    public function __construct(string $containerName='') {
-        $this->connectionString = "DefaultEndpointsProtocol=https;AccountName="
+    public function __construct(string $container='') {
+        try {
+            $this->connectionString = "DefaultEndpointsProtocol=https;AccountName="
             . Env::get('AZURE_BLOB_ACCOUNT')
             . ";AccountKey="
             . Env::get('AZURE_BLOB_KEY');
 
-        $this->containerName = strlen($containerName) > 0 ? $containerName : Env::get('AZURE_CONTAINER');
-    
+            $this->container = strlen($container) > 0 ? $container : Env::get('AZURE_CONTAINER');
+        
+            
+        } catch (\InvalidArgumentException $e) {
+            die($e->getMessage());
+        }
     }
 
 
@@ -40,11 +52,106 @@ class Blob {
 
         //Upload blob
         try {
-            $blobClient->createBlockBlob($this->containerName, basename($fileToUpload), $content);
+            $blobClient->createBlockBlob($this->container, basename($fileToUpload), $content);
+        
         } catch(ServiceException $e) {
             throw $e;
         } finally {
            fclose($content);
+           unlink($fileToUpload);
         }
     }
+
+
+    /**
+     * delete file(s)
+     */
+    public function delete(array $filesToDelete) :void {
+        $blobClient = BlobRestProxy::createBlobService($this->connectionString);
+        try {
+            foreach ($fileToUpload AS $file) {
+                $blobClient->deleteBlob($this->container, $file);
+            }
+
+        } catch(ServiceException $e) {
+            throw $e;
+        }  
+    }
+
+
+    /**
+     * 
+     */
+    protected function sasValidityInterval(string $interval) {
+        $date = new \DateTime(date("Y-m-d"));
+        $date->add(new \DateInterval($interval));
+        return sprintf('%sT%sZ', $date->format('Y-m-d'), $date->format('H:i:s'));
+    }
+
+
+    /**
+     * Generate a temporary SAS share key (also needed with computer vision)
+     * std interval: 1 day
+     */
+    public function generateBlobDownloadLinkWithSAS(string $filename, string $interval='P1D') {
+        $settings = StorageServiceSettings::createFromConnectionString($this->connectionString);
+        $accountName = $settings->getName();
+        $accountKey  = $settings->getKey();
+
+        $helper = new BlobSharedAccessSignatureHelper($accountName, $accountKey);
+
+        // Refer to following link for full candidate values to construct a service level SAS
+        // https://docs.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas
+        $sas = $helper->generateBlobServiceSharedAccessSignatureToken(
+            Resources::RESOURCE_TYPE_BLOB,
+            sprintf('%s/%s', $this->container, $filename),
+            'r',        // Read
+            $this->sasValidityInterval($interval)                            
+            // '2019-01-01T08:30:00Z'//,       // A valid ISO 8601 format expiry time
+            //'2016-01-01T08:30:00Z',       // A valid ISO 8601 format expiry time
+            //'0.0.0.0-255.255.255.255'
+            //'https,http'
+        );
+
+        $connectionStringWithSAS = Resources::BLOB_ENDPOINT_NAME .
+            '='.
+            'https://' .
+            $accountName .
+            '.' .
+            Resources::BLOB_BASE_DNS_NAME .
+            ';' .
+            Resources::SAS_TOKEN_NAME .
+            '=' .
+            $sas;
+var_dump($connectionStringWithSAS);
+
+        $blobClientWithSAS = BlobRestProxy::createBlobService(
+            $connectionStringWithSAS
+        );
+
+        // return $blobClientWithSAS;
+
+        // We can download the blob with PHP Client Library
+        // downloadBlobSample($blobClientWithSAS);
+
+        // Or generate a temporary readonly download URL link
+       
+        $blobUrlWithSAS = sprintf(
+            '%s%s?%s',
+            (string)$blobClientWithSAS->getPsrPrimaryUri(),
+            sprintf('%s/%s', $this->container, $filename),
+            $sas
+        );
+
+        return $blobUrlWithSAS;
+/* 
+        file_put_contents("outputBySAS.txt", fopen($blobUrlWithSAS, 'r'));
+
+        return $blobUrlWithSAS;
+        */
+    }
+
+
+
+
 }

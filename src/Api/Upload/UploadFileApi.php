@@ -8,11 +8,10 @@ use App\Config\Env;
 use App\Api\AbsApi;
 use App\Db\UserDbCollection;
 use App\Db\ImagesDbCollection;
-use App\Img\Blob;
 use App\Helper\ResponseFactory;
 use App\Helper\FileValidator;
+use App\Img\Blob;
 use App\Img\ImgTransform;
-use App\Img\CloudImagePath;
 use App\Img\ComputerVision;
 // use App\Img\UploadException;
 use Psr\Http\Message\ServerRequestInterface;
@@ -29,7 +28,6 @@ class UploadFileApi extends AbsApi {
     public function __construct(
         Blob $blob,
         ComputerVision $computerVision,
-        CloudImagePath $pathBuilder,
         FileValidator $validator,
         ImagesDbCollection $imagesDb,
         UserDbCollection $userDb,
@@ -37,7 +35,6 @@ class UploadFileApi extends AbsApi {
     ) {
         // get database connection
         $this->computerVision = $computerVision;
-        $this->pathBuilder = $pathBuilder;
         $this->validator = $validator;
         $this->userDb = $userDb;
         $this->imagesDb = $imagesDb;
@@ -92,7 +89,7 @@ class UploadFileApi extends AbsApi {
                 )
             );
         }
-        $filepath = sprintf("$this->folder/%s", $filepath);
+        $filepath = sprintf("$this->folder/%s_%s", uniqid(), $filepath);
         $file->moveTo($filepath);
         return $filepath;
     }
@@ -112,7 +109,7 @@ class UploadFileApi extends AbsApi {
      */
     protected function analyzeImage(string $filename) :array {
         return $this->computerVision->getAnalysis(
-            $this->pathBuilder->getFullPath($filename)
+            $this->blob->generateBlobDownloadLinkWithSAS($filename)
         );
     }
 
@@ -148,29 +145,23 @@ class UploadFileApi extends AbsApi {
             
 
             // perform computer vision and store given tags..
-            $cvResponse = $this->analyzeImage($file->getClientFilename());
+            $cvResponse = $this->analyzeImage(basename($filepath));
             $tags = [];
             foreach ($cvResponse['categories'] AS $v) {
                 if ($v['score'] > $this->computerVision->getThreshold()) {
                     $tags[] = $v['name'];
                 }
             }
-/*
-var_dump($cvResponse);
-var_dump($tags);
-die();
-*/
+
             // setup Image object
             $this->getUserId($data->user);
             // which url? Maybe from blob
-            $this->imagesDb->mapObj->setUrl($file->getClientFilename()); 
+            $this->imagesDb->mapObj->setUrl(basename($filepath)); 
             $this->imagesDb->mapObj->setUserId($this->userDb->mapObj->getId());
             $this->imagesDb->mapObj->setTags($tags); // tags?
             $this->imagesDb->mapObj->setExif([]); // exif?
 
-/*            print_r($this->imagesDb->mapObj->toArray());
-exit;
- */           // now store on db
+          // now store on db
             $this->imagesDb->setupQuery('insert');
             if (! $this->imagesDb->executeQueries()) {
                 return $this->setResponse(500, 'Unable to store images information.', $headers);
@@ -195,10 +186,10 @@ exit;
         
         // in the end ALWAYS remove the uploaded file(s)
         } finally {
-            if (file_exists($filepath)) {
+            /*if (file_exists($filepath)) {
                 unlink($filepath);
             }
-          /*  if (isset($thumbnailName) && file_exists($thumbnailName)) {
+            if (isset($thumbnailName) && file_exists($thumbnailName)) {
                 unlink($thumbnailName);
             }
             */

@@ -24,16 +24,12 @@ class ImagesDbCollection extends BaseDbCollection{
      * @access public
      * Select all images related to current user
      */
-    public function selectAllByUser(string $userId) :array{
-        $filter = [
-            'userId' => $this->sanitizer->clean(
-                'ObjectId("'.$userId.')'
-            )
-        ];
+    public function selectAllByUser($userId) :array{
+        $filter = ['userId' => $userId];
 		$options = ['typeMap'=>'Images'];
-        $cursor = $this->select($filter, $options)->toArray();
+        $cursor  = $this->select($filter, $options);//->toArray();
 
-        return $cursor;
+        return $cursor->toArray();
     }
 
 }

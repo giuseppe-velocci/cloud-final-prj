@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Controller\Api;
+namespace App\Controller\Api\User;
 
 use Psr\Http\Message\ServerRequestInterface;
 use App\Api\Login\UpdateUserApi;

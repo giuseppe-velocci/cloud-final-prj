@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Db;
 
 use App\Helper\Validator;
+use MongoDB\BSON\ObjectId;
 
 class Images extends BaseMapObject{ 
     protected $_id;
@@ -22,9 +23,9 @@ class Images extends BaseMapObject{
 	];
 
     public function __construct(
-        $id = null, 
+        ObjectId $id = null, 
         string $url = '', 
-        string $userId = '', 
+        ObjectId $userId = null, 
         array  $tags = [], 
         ?array $exif = null
     ){

@@ -57,8 +57,9 @@ class Blob {
         } catch(ServiceException $e) {
             throw $e;
         } finally {
-           fclose($content);
-           unlink($fileToUpload);
+            fclose($content);
+            if (file_exists($fileToUpload))
+                unlink($fileToUpload);
         }
     }
 
@@ -66,12 +67,10 @@ class Blob {
     /**
      * delete file(s)
      */
-    public function delete(array $filesToDelete) :void {
+    public function delete(string $fileToDelete) :void {
         $blobClient = BlobRestProxy::createBlobService($this->connectionString);
         try {
-            foreach ($fileToUpload AS $file) {
-                $blobClient->deleteBlob($this->container, $file);
-            }
+            $blobClient->deleteBlob($this->container, $fileToDelete);
 
         } catch(ServiceException $e) {
             throw $e;
@@ -80,9 +79,9 @@ class Blob {
 
 
     /**
-     * 
+     * @param string $interval Interval in php date format --> "P" + int + "Y|M|D"
      */
-    protected function sasValidityInterval(string $interval) {
+    public function sasValidityInterval(string $interval) {
         $date = new \DateTime(date("Y-m-d"));
         $date->add(new \DateInterval($interval));
         return sprintf('%sT%sZ', $date->format('Y-m-d'), $date->format('H:i:s'));
@@ -93,21 +92,24 @@ class Blob {
      * Generate a temporary SAS share key (also needed with computer vision)
      * std interval: 1 day
      */
-    public function generateBlobDownloadLinkWithSAS(string $filename, string $interval='P1D') {
+    public function generateBlobDownloadLinkWithSAS(string $filename, ?string $interval=null) {
         $settings = StorageServiceSettings::createFromConnectionString($this->connectionString);
         $accountName = $settings->getName();
         $accountKey  = $settings->getKey();
 
         $helper = new BlobSharedAccessSignatureHelper($accountName, $accountKey);
 
+        $interval   = $interval ?? 'P1D'; // 1 day validity
+        $expiry     = $this->sasValidityInterval($interval);
+
         // Refer to following link for full candidate values to construct a service level SAS
         // https://docs.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas
         $sas = $helper->generateBlobServiceSharedAccessSignatureToken(
             Resources::RESOURCE_TYPE_BLOB,
             sprintf('%s/%s', $this->container, $filename),
-            'r',        // Read
-            $this->sasValidityInterval($interval)                            
-            // '2019-01-01T08:30:00Z'//,       // A valid ISO 8601 format expiry time
+            'r',      // Read
+            $expiry  // A valid ISO 8601 format expiry time                        
+            // '2019-01-01T08:30:00Z'//,     
             //'2016-01-01T08:30:00Z',       // A valid ISO 8601 format expiry time
             //'0.0.0.0-255.255.255.255'
             //'https,http'
@@ -123,7 +125,6 @@ class Blob {
             Resources::SAS_TOKEN_NAME .
             '=' .
             $sas;
-var_dump($connectionStringWithSAS);
 
         $blobClientWithSAS = BlobRestProxy::createBlobService(
             $connectionStringWithSAS

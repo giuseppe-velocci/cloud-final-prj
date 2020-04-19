@@ -4,24 +4,27 @@ declare(strict_types=1);
 
 namespace App\Api\Upload;
 
+use MongoDB\BSON\ObjectId;
 use App\Config\Env;
 use App\Db\UserDbCollection;
 use App\Db\ImagesDbCollection;
 use App\Img\Blob;
 use App\Helper\ResponseFactory;
 use App\Api\AbsApi;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
-class UploadFileApi extends AbsApi {
+class DeleteFileApi extends AbsApi {
     public function __construct(
         Blob $blob,
         ImagesDbCollection $imagesDb,
         UserDbCollection $userDb,
         ResponseFactory $responseFactory
     ) {
-        $blob = $this->blob;
-        $imagesDb = $this->imagesDb;
-        $userDb = $this->userDb;
-        $responseFactory = $this->responseFactory;
+        $this->blob = $blob;
+        $this->imagesDb = $imagesDb;
+        $this->userDb = $userDb;
+        $this->responseFactory = $responseFactory;
 
         chdir(dirname(__DIR__, 3));
 		$this->config = require_once 'config/api.php';
@@ -33,11 +36,64 @@ class UploadFileApi extends AbsApi {
      * @access public
      */
     public function execute(ServerRequestInterface $request) :ResponseInterface {
-        $data = json_decode($request->getParsedBody()['json']);
+        $data = json_decode($request->getParsedBody()['json'], true);
         $headers = $this->config['headers'];
-        $uploadedFiles = $request->getUploadedFiles();
+
+        // try block to delete images
+        try {
+            if (count($data) == 1) {
+                throw new \InvalidArgumentException('At least an image must be selected for deletion.');
+            }    
+
+            // find current user (to validate he is the owner of the files)
+            if (! $this->userDb->findByEmail($data['user'])) {
+                throw new \InvalidArgumentException('Wrong data provided.');
+            }
+
+            unset($data['user']);
+
+            // cycle through images and prepare queries
+            foreach ($data AS $k=>$v) {
+
+                // find the image & verify that this user has privileges to delete it
+                $image = $this->imagesDb->select(['url' => $v])->toArray();
+
+                if (count($image) < 1 || is_null($image[0]->_id)) {
+                    throw new \InvalidArgumentException('Cannot find the given image to be deleted.');
+                }
+
+                if ($image[0]->userId->__toString() != $this->userDb->mapObj->getId()->__toString()) {
+                    throw new \InvalidArgumentException('User does not have enough privilges to perform this action.');
+                }
+                // then delete from db AND from blob
+                $this->imagesDb->setupQuery('delete', ['_id' => $image[0]->_id]);
+            }
 
 
+            // execute queries
+            if (! $this->imagesDb->executeQueries()) {
+                return $this->setResponse(500, 'Unable to execute the required operation.', $headers);
+            }
 
+            // then delete from blob
+            foreach ($data AS $k=>$v) {
+                $this->blob->delete($v);
+            }
+
+        // Azure errors
+        }  catch (InvalidArgumentTypeException $e) {
+            return $this->setResponse(400, $e->getMessage(), $headers);
+
+        } catch (ServiceException $e) {
+            return $this->setResponse(500, $e->getMessage(), $headers);
+
+        // app errors
+        } catch (\InvalidArgumentException $e) {
+            return $this->setResponse(400, $e->getMessage(), $headers);
+
+        } catch (\Exception $e) {
+            return $this->setResponse(500, $e->getMessage(), $headers);
+        } 
+        return $this->setResponse(200, 'Images deleted!', $headers);
     }
 }

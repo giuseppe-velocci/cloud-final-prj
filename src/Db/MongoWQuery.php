@@ -15,6 +15,7 @@ class MongoWQuery {
     protected $wConcern;
     protected $db;
 
+    const QUERY_COMMANDS = ['insert', 'update', 'delete'];
 
     public function __construct(
         MongoConnection $connection, 
@@ -39,8 +40,13 @@ class MongoWQuery {
 
 
     public function addQuery(string $cmd, array $data, ?array $filter=null) {
-        if ($cmd != 'insert' && $cmd != 'update' && $cmd != 'delete') {
-            throw new \InvalidArgumentException('Invalid query operation. Must be one among insert, update, delete.');
+        if (! in_array($cmd, self::QUERY_COMMANDS)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Invalid query operation. Must be one among %s.',
+                    implode(', ', self::QUERY_COMMANDS)
+                )
+            );
         }
 
         if ($cmd != 'insert') {
@@ -97,6 +103,7 @@ class MongoWQuery {
     
 
     public function select(Query $query, string $collection) :CursorInterface  {
+// var_dump($query);
         try {
             return $this->connection->executeQuery(
                 sprintf('%s.%s', $this->db, $collection),

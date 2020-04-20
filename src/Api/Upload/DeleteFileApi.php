@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Api\Upload;
 
-use MongoDB\BSON\ObjectId;
 use App\Config\Env;
 use App\Db\UserDbCollection;
 use App\Db\ImagesDbCollection;

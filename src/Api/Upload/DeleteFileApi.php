@@ -56,7 +56,7 @@ class DeleteFileApi extends AbsApi {
             foreach ($data AS $k=>$v) {
 
                 // find the image & verify that this user has privileges to delete it
-                $image = $this->imagesDb->select(['url' => $v])->toArray();
+                $image = $this->imagesDb->select(['filename' => $v])->toArray();
 
                 if (count($image) < 1 || is_null($image[0]->_id)) {
                     throw new \InvalidArgumentException('Cannot find the given image to be deleted.');

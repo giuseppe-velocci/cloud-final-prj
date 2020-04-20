@@ -79,11 +79,19 @@ class Blob {
 
 
     /**
-     * @param string $interval Interval in php date format --> "P" + int + "Y|M|D"
+     * @param string $expiry Interval in php date->add() format --> "P" + int + "Y|M|D"
+     * Alternatively $expiry may take a date in "Y-m-d" format that will be used as exipry date
      */
-    public function sasValidityInterval(string $interval) {
-        $date = new \DateTime(date("Y-m-d"));
-        $date->add(new \DateInterval($interval));
+    public function sasValidityInterval(string $expiry) {
+        if (strpos($expiry, 'P') === 0) {
+            $date = new \DateTime(date("Y-m-d"));
+            $date->add(new \DateInterval($expiry));
+
+        } else {
+            // .. should validate date format
+            $date = new \DateTime($expiry);
+        }
+        
         return sprintf('%sT%sZ', $date->format('Y-m-d'), $date->format('H:i:s'));
     }
 

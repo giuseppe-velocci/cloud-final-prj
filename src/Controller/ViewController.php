@@ -28,10 +28,27 @@ abstract class ViewController extends AbsController implements \App\Controller\I
         parent::__construct($middlewares);
     }
 
+    /**
+     * Returns arry with view params to be passed to the view. 
+     * May throw \Exception if something goes wrong. 
+     * The thrown exception MUST return an error code == http status code
+     * An error page with name that matches the status code error MUST exist
+     */
     protected abstract function setViewParams($request) :array;
 
+    /**
+     * Main response for the ViewController. Runs inside execute() method
+     */
     protected function controllerResponse($request) {
-        $params = $this->setViewParams($request);
+        try {
+            $params = $this->setViewParams($request);
+
+        } catch (\Exception $e) {
+            return $this->view->setResponse(
+                sprintf('Errors/%d', (int) $e->getCode()), []
+            );
+        }
+        
         $params['user'] = $this->findUser($request);
         
         return $this->view->setResponse($this->template, $params);

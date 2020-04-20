@@ -22,8 +22,10 @@ Select an image to upload:
     <input class="confirm-input" type="submit" value="Delete" /> 
     <br/><br/>
     <?php foreach($images AS $k => $img) :?>
-        Delete <input type="checkbox" name="img-<?= $this->e($k) ?>" value="<?= $this->e($img->url) ?>" />
-        &nbsp;<a href="?"><?= $this->e($img->url) ?></a> 
+        Delete <input type="checkbox" name="img-<?= $this->e($k) ?>" value="<?= $this->e($img->filename) ?>" />
+        &nbsp;<a href="/photodetails/<?= str_replace('.', '%20', $this->e($img->filename)) ?>">
+            <?= $this->e($img->filename) ?>
+        </a> 
         <br/>
     <?php endforeach; ?>
 </form>

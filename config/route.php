@@ -12,6 +12,8 @@ return [
 
     'GET /dashboard'  => App\Controller\Views\Dashboard::class,
     'GET /photomanager'  => App\Controller\Views\PhotoManager::class,
+    'GET /photodetails'  => App\Controller\Views\PhotoDetails::class,
+
     'POST /uploadfile' => App\Controller\Actions\UploadFileAction::class,
     'POST /deletefile' => App\Controller\Actions\DeleteFileAction::class,
 

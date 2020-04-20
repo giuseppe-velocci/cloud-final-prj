@@ -24,6 +24,7 @@ use MicrosoftAzure\Storage\Common\Exceptions\InvalidArgumentTypeException;
 
 class UploadFileApi extends AbsApi {
     protected $folder;
+    protected $expiry;
 
     public function __construct(
         Blob $blob,
@@ -47,7 +48,9 @@ class UploadFileApi extends AbsApi {
         // get upload folder 
         try {
             $this->folder = Env::get('UPLOAD_FOLDER');
+            $this->expiry = Env::get('AZURE_BLOB_SAS_EXPIRY');
             $this->blob = $blob;
+            
 
         } catch (\InvalidArgumentException $e) {
             die($e->getMessage());
@@ -104,15 +107,6 @@ class UploadFileApi extends AbsApi {
         return $thumbnailName;
     }
 
-    /**
-     * Computer vision
-     */
-    protected function analyzeImage(string $filename) :array {
-        return $this->computerVision->getAnalysis(
-            $this->blob->generateBlobDownloadLinkWithSAS($filename)
-        );
-    }
-
 
     /**
      * Main upload function
@@ -137,16 +131,22 @@ class UploadFileApi extends AbsApi {
         //    $thumbnailName = $this->createThumbnail($filepath);
 
             // extract the exif data..
-            
+            $exif = exif_read_data($file->getClientFilename());
+            $exif = $exif === false ? [] : $exif;       
 
             // store img on blob (with its thumbnail)
-           $this->storeOnCloud($filepath);
+            $this->storeOnCloud($filepath);
         //    $this->storeOnCloud($thumbnailName);
             
+            // generate sas url with default expiry date
+            $sasUrl = $this->blob->generateBlobDownloadLinkWithSAS(
+                basename($filepath),
+                $this->expiry
+            );
 
             // perform computer vision and store given tags..
-            $cvResponse = $this->analyzeImage(basename($filepath));
             $tags = [];
+            $cvResponse = $this->computerVision->getAnalysis($sasUrl);
             foreach ($cvResponse['categories'] AS $v) {
                 if ($v['score'] > $this->computerVision->getThreshold()) {
                     $tags[] = $v['name'];
@@ -156,10 +156,11 @@ class UploadFileApi extends AbsApi {
             // setup Image object
             $this->getUserId($data->user);
             // which url? Maybe from blob
-            $this->imagesDb->mapObj->setUrl(basename($filepath)); 
+            $this->imagesDb->mapObj->setFilename(basename($filepath)); 
+            $this->imagesDb->mapObj->setUrl($sasUrl); 
             $this->imagesDb->mapObj->setUserId($this->userDb->mapObj->getId());
             $this->imagesDb->mapObj->setTags($tags); // tags?
-            $this->imagesDb->mapObj->setExif([]);   // exif?
+            $this->imagesDb->mapObj->setExif($exif); // exif?
 
           // now store on db
             $this->imagesDb->setupQuery('insert');

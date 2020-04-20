@@ -12,15 +12,6 @@ abstract class AbsResponseMiddleware implements IMiddleware{
     protected abstract function middlewareAction(ResponseInterface $response);
 
     public function handle($data, ?callable $next=null) {
-        /*
-        $result = $this->middlewareAction($data);
-
-        if (is_null($next)) {
-            return $result;
-        }
-
-        return $next($result);
-        */
         if (! is_null($next)) {
             $data = $next($data);
         }

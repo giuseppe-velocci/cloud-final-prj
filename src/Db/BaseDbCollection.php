@@ -108,6 +108,10 @@ abstract class BaseDbCollection {
      * @return bool true on success, false otherwise
      */
     public function executeQueries() :bool {
+        if ($this->wQuery->getBulkCount() < 1) {
+            throw new \InvalidArgumentException('No queries were enqueed.');
+        }
+
         if (empty($this->wQuery->execute($this->collection)))
             return false;
 

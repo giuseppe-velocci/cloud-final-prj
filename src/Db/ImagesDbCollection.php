@@ -7,18 +7,24 @@ use MongoDB\BSON\ObjectId;
 use App\Db\MongoWQuery;
 use App\Helper\ISanitizer;
 use App\Config\Env;
+use App\Img\Blob;
 
 class ImagesDbCollection extends BaseDbCollection{
+    use \App\Traits\RefreshSasTrait;
+
     protected $collection = 'images';
     
     public function __construct(
         Images $mapObj,
         MongoWQuery $wQuery,
-        ISanitizer $sanitizer
+        ISanitizer $sanitizer,
+        Blob $blob
 	) {
         parent::__construct(
             $mapObj, $wQuery, $sanitizer
         );
+
+        $this->blob = $blob;
     }
     
     /**
@@ -27,11 +33,13 @@ class ImagesDbCollection extends BaseDbCollection{
      * @param MongoDB\BSON\ObjectId $userId MongoDb Id for the user
      */
     public function selectAllByUser(ObjectId $userId) :array{
-        $filter = ['userId' => $userId];
+        $filter  = ['userId' => $userId];
 		$options = ['typeMap'=>'Images'];
-        $cursor  = $this->select($filter, $options);//->toArray();
+        $cursor  = $this->select($filter, $options)->toArray();
 
-        return $cursor->toArray();
+        $this->refreshSas($cursor, $this);
+
+        return $cursor;
     }
 
 }

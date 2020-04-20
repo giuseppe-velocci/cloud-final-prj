@@ -39,6 +39,10 @@ class MongoWQuery {
     }
 
 
+    public function getBulkCount() {
+        return $this->bulk->count();
+    }
+
     public function addQuery(string $cmd, array $data, ?array $filter=null) {
         if (! in_array($cmd, self::QUERY_COMMANDS)) {
             throw new \InvalidArgumentException(

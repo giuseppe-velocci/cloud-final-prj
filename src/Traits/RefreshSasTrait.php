@@ -16,6 +16,7 @@ Trait RefreshSasTrait {
      */
     protected $blob;
 
+
     /**
      * After all photos are passed to this method 
      * 
@@ -68,7 +69,7 @@ Trait RefreshSasTrait {
                 // .. throw error
             }
         } catch (\InvalidArgumentexception $e) {
-            //.. do nothing since no queryes were added
+            //.. do nothing since no queries were added
         }
         
         return $data;

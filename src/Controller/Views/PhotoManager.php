@@ -38,7 +38,8 @@ class PhotoManager extends ViewController implements \App\Controller\IController
         $images = [];
         if($this->userCollection->findByEmail($cookies['user'])) {
             $images = $this->imgCollection->selectAllByUser(
-                $this->userCollection->mapObj->getId()//->__toString()
+                $this->userCollection->mapObj->getId(),
+                $this->isLastLoginNearExpiry($cookies)
             );
         }
 

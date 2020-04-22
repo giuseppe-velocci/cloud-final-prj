@@ -25,8 +25,15 @@ class DeleteFileApi extends AbsApi {
         $this->userDb = $userDb;
         $this->responseFactory = $responseFactory;
 
-        chdir(dirname(__DIR__, 3));
-		$this->config = require_once 'config/api.php';
+        try {
+			$this->cookieParam = Env::get('HTTP_COOKIE_PARAM');
+			$this->headers = Env::get('API_HEADERS');
+			$this->config  = Env::get('API_CONFIG');
+			
+        } catch (\InvalidArgumentException $e) {
+            die($e->getMessage());
+        }
+
         date_default_timezone_set($this->config['timezone']);
     }
 
@@ -36,7 +43,7 @@ class DeleteFileApi extends AbsApi {
      */
     public function execute(ServerRequestInterface $request) :ResponseInterface {
         $data = json_decode($request->getParsedBody()['json'], true);
-        $headers = $this->config['headers'];
+        $headers = $this->headers;
 
         // try block to delete images
         try {

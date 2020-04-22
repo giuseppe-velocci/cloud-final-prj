@@ -40,13 +40,13 @@ class UploadFileApi extends AbsApi {
         $this->userDb = $userDb;
         $this->imagesDb = $imagesDb;
         $this->responseFactory = $responseFactory;
-
-        chdir(dirname(__DIR__, 3));
-		$this->config = require_once 'config/api.php';
-        date_default_timezone_set($this->config['timezone']);
         
         // get upload folder 
         try {
+			$this->cookieParam = Env::get('HTTP_COOKIE_PARAM');
+			$this->headers = Env::get('API_HEADERS');
+			$this->config  = Env::get('API_CONFIG');
+			
             $this->folder = Env::get('UPLOAD_FOLDER');
             $this->expiry = Env::get('AZURE_BLOB_SAS_EXPIRY');
             $this->blob = $blob;
@@ -114,7 +114,7 @@ class UploadFileApi extends AbsApi {
      */
     public function execute(ServerRequestInterface $request) :ResponseInterface {
         $data = json_decode($request->getParsedBody()['json']);
-        $headers = $this->config['headers'];
+        $headers = $this->headers;
         $uploadedFiles = $request->getUploadedFiles();
 
         foreach ($uploadedFiles AS $file) {

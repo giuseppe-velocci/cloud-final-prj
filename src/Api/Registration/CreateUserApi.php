@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Api\Registration;
 
 use App\Api\AbsApi;
+use App\Config\Env;
 use App\Db\User;
 use App\Db\UserDbCollection;
 use App\Helper\ResponseFactory;
@@ -27,16 +28,23 @@ class CreateUserApi extends AbsApi{
         $this->userDb = $userDb;
         $this->responseFactory = $responseFactory;
 
-        chdir(dirname(__DIR__, 3));
-		$this->config = require_once 'config/api.php';
-		date_default_timezone_set($this->config['timezone']);
+        try {
+			$this->cookieParam = Env::get('HTTP_COOKIE_PARAM');
+			$this->headers = Env::get('API_HEADERS');
+			$this->config  = Env::get('API_CONFIG');
+			
+        } catch (\InvalidArgumentException $e) {
+            die($e->getMessage());
+        }
+
+        date_default_timezone_set($this->config['timezone']);
     }
 
 
 
     public function execute(ServerRequestInterface $request) :ResponseInterface {
         // required headers
-        $headers = $this->config['headers'];
+        $headers = $this->headers;
 
         // get posted data
         $post = $request->getParsedBody();

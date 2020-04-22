@@ -3,6 +3,7 @@
 namespace App\Api\Login;
 
 use \Firebase\JWT\JWT;
+use App\Config\Env;
 use App\Db\MongoConnection;
 use App\Api\AbsApi;
 use App\Db\User;
@@ -21,15 +22,22 @@ class ValidateLoginApi {
 	) {
         $this->userDb = $userDb;
 		$this->responseFactory = $responseFactory;
-		
-		chdir(dirname(__DIR__, 3));
-		$this->config = require_once 'config/api.php';
+        
+        try {
+			$this->cookieParam = Env::get('HTTP_COOKIE_PARAM');
+			$this->headers = Env::get('API_HEADERS');
+			$this->config  = Env::get('API_CONFIG');
+			
+        } catch (\InvalidArgumentException $e) {
+            die($e->getMessage());
+        }
+
         date_default_timezone_set($this->config['timezone']);
     }
     
     
     public function execute(ServerRequestInterface $request) :ResponseInterface {
-        $headers = $this->config['headers'];
+        $headers = $this->headers;
         
         // get posted data
         if (! $request->hasHeader('Authorization')) {

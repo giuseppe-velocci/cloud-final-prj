@@ -5,3 +5,4 @@
 .phpunit.result.cache
 !/uploads/
 /uploads/*.txt
+/config/*.key

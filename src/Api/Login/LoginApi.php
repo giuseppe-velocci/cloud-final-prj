@@ -29,19 +29,19 @@ class LoginApi extends AbsApi {
 
 		try {
 			$this->cookieParam = Env::get('HTTP_COOKIE_PARAM');
+			$this->headers = Env::get('API_HEADERS');
+			$this->config  = Env::get('API_CONFIG');
 			
         } catch (\InvalidArgumentException $e) {
             die($e->getMessage());
         }
 		
-		chdir(dirname(__DIR__, 3));
-		$this->config = require_once 'config/api.php';
 		date_default_timezone_set($this->config['timezone']);
 	}
 	
 
 	public function execute(ServerRequestInterface $request) :ResponseInterface {
-		$headers = $this->config['headers'];
+		$headers = $this->headers;
 		
 		// get posted data
         $post = $request->getParsedBody();
@@ -79,7 +79,7 @@ class LoginApi extends AbsApi {
 		
 		return $this->setResponse(
 			200, 
-			['msg'=>"Successful login!", $this->cookieParam=>['user' => $user, 'token'=>$jwt]], 
+			['msg'=>"Successful login!", $this->cookieParam=>['user' => $user, 'token'=>$jwt, 'logindate' => date("Y-m-d H:i:s")]], 
 			$headers
 		);
 	}

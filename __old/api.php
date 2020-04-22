@@ -1,11 +1,4 @@
 <?php
-// show error reporting
-// error_reporting(E_ALL);
- 
-// set your default time-zone
-// date_default_timezone_set('Europe/Rome');
- 
-// variables used for jwt
 return[
     'headers' => [
         'Access-Control-Allow-Origin' => 'http://localhost',

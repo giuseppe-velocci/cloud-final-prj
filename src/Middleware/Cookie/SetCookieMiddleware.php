@@ -13,6 +13,7 @@ use App\Config\Env;
 class SetCookieMiddleware extends AbsResponseMiddleware implements IMiddleware{
     protected $crypt;
     protected $toEncrypt;
+    protected $expirationInDays;
     const BODY_GET_COOKIE_PARAM = 'storage';
 
     public function __construct(CryptMsg $crypt){
@@ -20,6 +21,8 @@ class SetCookieMiddleware extends AbsResponseMiddleware implements IMiddleware{
 
         try {
             $this->toEncrypt = explode(',', Env::get('COOKIES_TO_ENCRYPT'));
+            $this->expirationInDays = (int) Env::get('COOKIE_EXPIRY_IN_DAYS') * 60 *60 *24;
+
         } catch (\InvalidArgumentException $e) {
             die($e->getMessage());
         }
@@ -44,7 +47,7 @@ class SetCookieMiddleware extends AbsResponseMiddleware implements IMiddleware{
                 setcookie(
                     $name,
                     in_array($name, $this->toEncrypt) ? $this->crypt->encrypt($cookie, $this->crypt:: nonce()) : $cookie,
-                    0,
+                    time() + $this->expirationInDays,
                     '',
                     '',
                     false,

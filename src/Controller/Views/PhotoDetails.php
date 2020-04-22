@@ -29,7 +29,7 @@ class PhotoDetails extends ViewController implements \App\Controller\IController
     }
 
     protected function getImageDetailsFromDb (string $imgPath) :array {
-        return $this->imagesDb->select(['url' => $imgPath])->toArray();
+        return $this->imagesDb->select(['filename' => $imgPath])->toArray();
     }
 
     protected function setViewParams($request) :array{
@@ -37,12 +37,17 @@ class PhotoDetails extends ViewController implements \App\Controller\IController
         if (count($splitPath) < 2) {
             throw new \Exception('Invalid request.', 400);
         }
-        $imgPath = str_replace('%20', '.', $splitPath[1]);
+        $imgPath = str_replace('%20', '.', $splitPath[2]);
 
-        //
+        //select image from db to get data
+        $imgDetails = $this->getImageDetailsFromDb ($imgPath)[0];
+
+        if (is_null($imgDetails)) {
+            throw new \Exception('Not Found.', 404);
+        }
 
         return [
-            'imgPath' => $imgPath
+            'imgDetails' => $imgDetails
         ];
     }
 }

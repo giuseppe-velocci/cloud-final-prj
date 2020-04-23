@@ -12,7 +12,7 @@ use App\Helper\ResponseFactory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class ValidateLoginApi {
+class ValidateLoginApi extends AbsApi{
     protected $config;
     protected $userDb;
 
@@ -24,9 +24,7 @@ class ValidateLoginApi {
 		$this->responseFactory = $responseFactory;
         
         try {
-			$this->cookieParam = Env::get('HTTP_COOKIE_PARAM');
-			$this->headers = Env::get('API_HEADERS');
-			$this->config  = Env::get('API_CONFIG');
+			parent::__construct();
 			
         } catch (\InvalidArgumentException $e) {
             die($e->getMessage());

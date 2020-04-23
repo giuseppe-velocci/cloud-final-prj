@@ -4,13 +4,21 @@ declare(strict_types=1);
 
 namespace App\Api;
 
+use App\Config\Env;
 use App\Helper\ResponseFactory;
 use App\Db\BaseMapObject;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+
 abstract class AbsApi {
     protected $responseFactory;
+
+    public function __construct() {
+        $this->cookieParam = Env::get('HTTP_COOKIE_PARAM');
+        $this->headers = Env::get('API_HEADERS');
+        $this->config  = Env::get('API_CONFIG');
+    }
 
     /**
      * int code status code

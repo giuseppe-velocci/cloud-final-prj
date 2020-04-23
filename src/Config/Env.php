@@ -6,7 +6,6 @@ namespace App\Config;
 class Env {
     protected static $basepath;
     protected static $envFile = "/config/config.env";
-    protected static $apiFile = './config/api.php';
 
     protected static $config;
    
@@ -53,7 +52,6 @@ class Env {
         $basepath = $basepath ?? dirname(__DIR__, 2);
         try {
             self::$config = self::$config ?? self::parseEnv($basepath . '/' . self::$envFile);
-            self::$config['API'] = require_once(self::$apiFile);
 
         } catch (\Error $e) {
             die($e->getMessage());

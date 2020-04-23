@@ -10,7 +10,6 @@ use App\Config\Env;
 use App\Img\Blob;
 
 class ImagesDbCollection extends BaseDbCollection{
-    use \App\Traits\RefreshSasTrait;
 
     protected $collection = 'images';
     
@@ -33,15 +32,15 @@ class ImagesDbCollection extends BaseDbCollection{
      * @param MongoDB\BSON\ObjectId $userId MongoDb Id for the user
      * @param bool $refresh Tells if resources need to be refreshed in order to renew sas links. default is false
      */
-    public function selectAllByUser(ObjectId $userId, bool $refresh=false) :array{
+    public function selectAllByUser(ObjectId $userId) :array{ //, bool $refresh=true) :array{
         $filter  = ['userId' => $userId];
 		$options = ['typeMap'=>'Images'];
         $cursor  = $this->select($filter, $options)->toArray();
-
+/*
         if ($refresh) {
             $cursor = $this->refreshSas($cursor, $this);
         }
-
+*/
         return $cursor;
     }
 

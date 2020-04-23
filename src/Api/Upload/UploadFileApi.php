@@ -43,9 +43,7 @@ class UploadFileApi extends AbsApi {
         
         // get upload folder 
         try {
-			$this->cookieParam = Env::get('HTTP_COOKIE_PARAM');
-			$this->headers = Env::get('API_HEADERS');
-			$this->config  = Env::get('API_CONFIG');
+			parent::__construct();
 			
             $this->folder = Env::get('UPLOAD_FOLDER');
             $this->expiry = Env::get('AZURE_BLOB_SAS_EXPIRY');

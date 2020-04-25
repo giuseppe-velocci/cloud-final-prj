@@ -117,7 +117,10 @@ class UploadFileApi extends AbsApi {
 
         foreach ($uploadedFiles AS $file) {
         try {
-            $filepath = $file->getClientFilename();
+           // check if user is valid
+            $this->getUserId($data->user);
+
+            $filepath = str_replace(' ', '-', $file->getClientFilename());
 
             // upload locally
             $filepath = $this->uploadLocal($filepath, $file);
@@ -129,20 +132,21 @@ class UploadFileApi extends AbsApi {
         //    $thumbnailName = $this->createThumbnail($filepath);
 
             // extract the exif data..
-            $exif = exif_read_data($file->getClientFilename());
+            $exif = exif_read_data($filepath, "FILE,COMPUTED,ANY_TAG,IFD0,THUMBNAIL,COMMENT,EXIF", true);
             $exif = $exif === false ? [] : $exif;       
-
+   
             // store img on blob (with its thumbnail)
             $this->storeOnCloud($filepath);
         //    $this->storeOnCloud($thumbnailName);
-            
+
             // generate sas url with default expiry date
             $sasUrl = $this->blob->generateBlobDownloadLinkWithSAS(
                 basename($filepath),
                 $this->expiry
             );
-
-            // perform computer vision and store given tags..
+/*var_dump(__LINE__, $sasUrl, filter_var($sasUrl, FILTER_VALIDATE_URL));
+exit;
+  */          // perform computer vision and store given tags..
             $tags = [];
             $cvResponse = $this->computerVision->getAnalysis($sasUrl);
             foreach ($cvResponse['categories'] AS $v) {
@@ -151,9 +155,8 @@ class UploadFileApi extends AbsApi {
                 }
             }
 
-            // setup Image object
-            $this->getUserId($data->user);
-            // which url? Maybe from blob
+            
+             // setup Image object
             $this->imagesDb->mapObj->setFilename(basename($filepath)); 
             $this->imagesDb->mapObj->setUrl($sasUrl); 
             $this->imagesDb->mapObj->setUserId($this->userDb->mapObj->getId());
@@ -185,6 +188,7 @@ class UploadFileApi extends AbsApi {
             return $this->setResponse(500, $e->getMessage(), $headers);
         }
         }
-        return $this->setResponse(200, 'Successful Upload!', $headers);
+        // 201 created
+        return $this->setResponse(201, 'Successful Upload!', $headers);
     }
 }

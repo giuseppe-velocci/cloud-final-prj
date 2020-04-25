@@ -81,7 +81,7 @@ class CreateUserApi extends AbsApi{
         $code = 400;
         $message = 'Unable to create user.';
         if ($this->userDb->executeQueries()) {
-            $code = 200;
+            $code = 201; // 201 created
             $message = 'User successfully created!';
         } 
 

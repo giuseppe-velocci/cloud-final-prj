@@ -46,14 +46,14 @@ class Blob {
         if (! file_exists($fileToUpload)) {
             throw new InvalidArgumentTypeException("File not found");
         }
-            
+           
         # Upload file as a block blob
         $content = fopen($fileToUpload, "r");
 
         //Upload blob
         try {
             $blobClient->createBlockBlob($this->container, basename($fileToUpload), $content);
-        
+      
         } catch(ServiceException $e) {
             throw $e;
         } finally {

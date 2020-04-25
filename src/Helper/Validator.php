@@ -14,6 +14,43 @@ class Validator {
     const EMAIL     = 'email';
     const INT       = 'int';
     const FLOAT     = 'float';
+    const DATE      = 'date';
+
+
+protected static function getValidationForField($name, $type, $value) {
+    if ($type == self::NAME) {
+        self::validName($name, $value);
+
+    } elseif ($type == self::TEXT) {
+        self::validText($name, $value);
+        
+    
+    } elseif ($type == self::MONGOID) {
+        self::validMongoId($name, $value);
+
+    } elseif ($type == self::EMAIL) {
+        self::validEmail($name, $value);
+
+    } elseif ($type == self::INT) {
+        self::validInt($name, $value);
+
+    } elseif ($type == self::FLOAT) {
+        self::validFloat($name, $value);
+
+    } elseif ($type == self::URL) {
+        self::validUrl($name, $value);
+
+    } elseif ($type == self::FILENAME) {
+        self::validFilename($name, $value);
+
+    } elseif ($type == self::DATE) {
+        self::validDate($name, $value);
+
+    } else {
+        throw new \InvalidArgumentException("Invalid data type declared for $name");
+    }
+}
+
 
     /**
      * @access public
@@ -28,7 +65,7 @@ class Validator {
         $types = $mapObject->getDataTypes();
         $data  = $mapObject->toArray();
 
-        foreach ($types AS $name => $type) {
+        foreach ($types AS $name => $type) {           
             // check if value is required to handle null and empty values
             $isRequired = in_array($name, $required);
             if (is_null($data[$name]) || empty($data[$name])) {
@@ -39,39 +76,18 @@ class Validator {
                 }
             }
 
-           // then cycle
-            if ($type == self::NAME) {
-                if (is_array($data[$name])) {
-                    foreach ($data[$name] AS $v) {
-                        self::validName($name, $v);
+            // then cycle
+            if (is_array($data[$name])) {
+                array_walk_recursive(
+                    $data[$name], 
+                    function($item, $key) use ($name, $type) { 
+                        if (! is_array($item)) {
+                            self::getValidationForField($name, $type, $item);  
+                        }
                     }
-                } else {
-                    self::validName($name, $data[$name]);
-                }
-
-            } elseif ($type == self::TEXT) {
-                self::validText($name, $data[$name]);
-            
-            } elseif ($type == self::MONGOID) {
-                self::validMongoId($name, $data[$name]);
-
-            } elseif ($type == self::EMAIL) {
-                self::validEmail($name, $data[$name]);
-
-            } elseif ($type == self::INT) {
-                self::validInt($name, $data[$name]);
-
-            } elseif ($type == self::FLOAT) {
-                self::validFloat($name, $data[$name]);
-
-            } elseif ($type == self::URL) {
-                self::validUrl($name, $data[$name]);
-
-            } elseif ($type == self::FILENAME) {
-                self::validFilename($name, $data[$name]);
-
+                );
             } else {
-                throw new \InvalidArgumentException("Invalid data type declared for $name");
+                self::getValidationForField($name, $type, $data[$name]);
             }
         }
     }
@@ -130,7 +146,7 @@ class Validator {
      */
     protected static function validUrl(string $name, $value) :void {
         if (! filter_var($value, FILTER_VALIDATE_URL)) {
-            throw new \InvalidArgumentException(self::stdErrorMessage($name));
+            throw new \InvalidArgumentException(self::stdErrorMessage($name).$value);
         }
     }
 
@@ -209,6 +225,23 @@ class Validator {
      */
     protected static function validFloat(string $name, $value) :void {
         if (! filter_var($value, FILTER_VALIDATE_FLOAT)) {
+            throw new \InvalidArgumentException(self::stdErrorMessage($name));
+        }
+    }
+
+
+    /**
+     * @access protected
+     * Validate dates. Ita only validate dates in format: yyyy-mm-dd
+     * Throws \InvalidArgumentException
+     * 
+     * @param string $name Parameter name
+     * @param mixed $value Parameter value to be validated
+     * @return void
+     */
+    protected static function validDate(string $name, $value) :void {
+        $elems = explode('-', $value);
+        if (count($elems) !== 3 || ! checkdate($elems[1], $elems[2], $elems[0])) {
             throw new \InvalidArgumentException(self::stdErrorMessage($name));
         }
     }

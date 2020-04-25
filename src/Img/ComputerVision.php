@@ -21,7 +21,7 @@ class ComputerVision {
     ];
 
     public function __construct() {
-        $this->url = Env::get('AZURE_COMPUTER_VISION');
+        $this->url = Env::get('AZURE_COMPUTER_VISION_ENDPOINT');
         $this->url .= '/vision/v2.0/analyze';
         $this->key = Env::get('AZURE_COMPUTER_VISION_KEY');
     }

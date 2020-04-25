@@ -4,9 +4,8 @@
 <h3>Share with your friends: </h3>
 <form action="photoshare" method="POST">
     <label for="expiry" style="font-weight:bold;">Expiry: <input type="date" name="expiry" /></label>
-    <label for="expiry" style="font-weight:bold;">E-mail: <input type="text" name="email" /></label>
     <input type="hidden" name="filename" value="<?= $this->e($imgDetails->filename) ?>" />
-    <input type="submit" value="Share this photo" />
+    <input type="submit" value="New shareable link" />
 </form>
 <br/>
 

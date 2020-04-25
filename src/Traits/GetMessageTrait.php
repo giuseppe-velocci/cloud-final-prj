@@ -17,7 +17,7 @@ Trait GetMessageTrait {
             setcookie('message','',1);
         }
         if (isset($cookies['code'])) {
-            if ($cookies['code'] == '200')
+            if (substr($cookies['code'], 0, 2) == '20')
                 $this->msgStyle = 'black';
             setcookie('code','',1);
         }

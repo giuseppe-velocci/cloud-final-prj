@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Api\Upload;
 
 use App\Config\Env;
+use App\Img\Blob;
 use App\Db\UserDbCollection;
 use App\Db\ImagesDbCollection;
-use App\Db\ShareDbCollection;
 use App\Helper\ResponseFactory;
 use App\Helper\Guid;
-use App\Helper\Mailer;
 use App\Api\AbsApi;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -19,16 +18,14 @@ class ShareImageApi extends AbsApi {
     public function __construct(
         ImagesDbCollection $imagesDb,
         UserDbCollection $userDb,
-        ShareDbCollection $shareDb,
         Guid $guid,
-        Mailer $mailer,
+        Blob $blob,
         ResponseFactory $responseFactory
     ) {
         $this->imagesDb = $imagesDb;
         $this->userDb   = $userDb;
-        $this->shareDb  = $shareDb;
         $this->guid = $guid;
-        $this->mailer = $mailer;
+        $this->blob = $blob;
         $this->responseFactory = $responseFactory;
 
         try {
@@ -52,19 +49,21 @@ class ShareImageApi extends AbsApi {
 
         // try block to delete images
         try {
-            if (count($data) == 1) {
-                throw new \InvalidArgumentException('At least an image must be selected for deletion.');
-            }    
-
+           
             // find current user (to validate he is the owner of the files)
             if (! $this->userDb->findByEmail($data['user'])) {
                 throw new \InvalidArgumentException('Wrong data provided.');
             }
 
             unset($data['user']);
-            
+
+            // block if date less than today
+            if (strtotime($data['expiry']) - time() <= 0) {
+                throw new \InvalidArgumentException('The given date must be later than today.');
+            }
+
             // find the image & verify that this user has privileges to delete it
-            $image = $this->imagesDb->select(['filename' => $v])->toArray();
+            $image = $this->imagesDb->select(['filename' => $data['filename']])->toArray();
 
             if (count($image) < 1 || is_null($image[0]->_id)) {
                 throw new \InvalidArgumentException('Cannot find the given image to be deleted.');
@@ -73,32 +72,30 @@ class ShareImageApi extends AbsApi {
             if ($image[0]->userId->__toString() != $this->userDb->mapObj->getId()->__toString()) {
                 throw new \InvalidArgumentException('User does not have enough privilges to perform this action.');
             }
-            // then delete from db AND from blob
-            $guid = $this->guid->generate();
             
-            $this->shareDb->mapObj->setImgUrl($imgUrl);
-            $this->shareDb->mapObj->setUrlGuid($guid);
-            $this->shareDb->mapObj->setEmail($data['email']);
-            $this->shareDb->mapObj->setExpiry($data['expiry']);
+            $image[0]->shares = array_merge(
+                $image[0]->shares ?? [], 
+                [
+                    $this->guid->generate() => 
+                        $this->blob->generateBlobDownloadLinkWithSAS($image[0]->filename, $data['expiry'])
+                ]
+            );
 
-            $this->shareDb->setupQuery('insert');
+            $this->imagesDb->mapObj->setId($image[0]->_id);
+            $this->imagesDb->mapObj->setFilename($image[0]->filename); 
+            $this->imagesDb->mapObj->setUrl($image[0]->url); 
+            $this->imagesDb->mapObj->setUserId($image[0]->userId);
+            $this->imagesDb->mapObj->setTags($image[0]->tags);
+            $this->imagesDb->mapObj->setExif(json_decode(json_encode($image[0]->exif), true));
+            $this->imagesDb->mapObj->setShares($image[0]->shares);
+
+            $this->imagesDb->setupQuery('update', ['_id' => $image[0]->_id]);
             
             // execute queries
             if (! $this->imagesDb->executeQueries()) {
                 return $this->setResponse(500, 'Unable to execute the required operation.', $headers);
             }
 
-            // send email
-            $this->mailer->mail(
-                $data['email'], 
-                sprintf('$s has shared a photo with you!', $data['user']),
-                sprintf(
-                    'You have a new photo to see.'
-                    . ' Follow this link<a href="%s">%s</a>.'
-                    . ' Hurry up: it will expire by %s.<br/>Cloudpj images.',
-                    ''
-                )
-            );
 
         // app errors
         } catch (\InvalidArgumentException $e) {
@@ -112,6 +109,6 @@ class ShareImageApi extends AbsApi {
             $response = $this->setResponse(200, 'Image Shared!', $headers);
         }
 
-        return $response->withQueryParams(['filename' => $data['filename']]);
+        return $response->withAddedHeader('Referer', $data['filename']);
     }
 }

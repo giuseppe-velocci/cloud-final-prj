@@ -6,7 +6,7 @@ namespace App\Controller\Actions;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use App\Helper\HashMsg;
-use App\Api\Upload\UploadFileApi;
+use App\Api\Upload\ShareImageApi;
 use App\Middleware\Api\ApiPostRequestMiddleware;
 use App\Middleware\Api\Api2HtmlResponseMiddleware;
 use App\Middleware\Auth\NeedsAuthMiddleware;
@@ -62,8 +62,9 @@ class ShareImageAction extends AbsController implements \App\Controller\IControl
 
 
     protected function handleResponse($response) {
-        $landing = 'photodetails/';
         $this->setResultMessage($response);
+        $filename = (string) $response->getHeaderLine('Referer');
+        $landing = sprintf('photodetails/%s', str_replace('.', '%20', $filename));
         
         header(sprintf('Location: /%s', $landing));
         exit;

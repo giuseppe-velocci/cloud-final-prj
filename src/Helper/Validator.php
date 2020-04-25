@@ -177,7 +177,7 @@ protected static function getValidationForField($name, $type, $value) {
      * @return void
      */
     protected static function validText(string $name, $value) :void {
-        if (preg_match('/\w+\W+/i', $value) != 1) {
+        if (preg_match('/.+/i', (string) $value) != 1) {
             throw new \InvalidArgumentException(self::stdErrorMessage($name));
         }
     }

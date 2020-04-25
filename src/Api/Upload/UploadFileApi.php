@@ -154,7 +154,6 @@ exit;
                     $tags[] = $v['name'];
                 }
             }
-
             
              // setup Image object
             $this->imagesDb->mapObj->setFilename(basename($filepath)); 
@@ -186,6 +185,9 @@ exit;
 
         } catch (\Exception $e) {
             return $this->setResponse(500, $e->getMessage(), $headers);
+       
+        } finally {
+            // if blob exists delete it?
         }
         }
         // 201 created

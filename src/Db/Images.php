@@ -13,6 +13,7 @@ class Images extends BaseMapObject{
     protected $userId;
     protected $tags;
     protected $exif;
+    protected $shares; // guid param for sas url: "urlGuid" => "sasUrl"
 
     protected $required = ['url', 'userId'];
     protected $dataTypes = [
@@ -21,26 +22,28 @@ class Images extends BaseMapObject{
         'filename'  => Validator::FILENAME,
 		'userId'    => Validator::MONGOID,
 		'tags'      => Validator::NAME, 
-		'exif'      => Validator::TEXT
+        'exif'      => Validator::TEXT,
+        'shares'    => Validator::TEXT
 	];
 
     public function __construct(
         ObjectId $id = null, 
-        string $url = '', 
+        string $url  = '', 
         string $filename = '',
         ObjectId $userId = null, 
-        array  $tags = [], 
-        ?array $exif = null
+        array $tags = [], 
+        array $exif = [],
+        array $shares = []
     ){
 		$this->setId($id);
         $this->setUrl($url);
         $this->setFilename($filename);
         $this->setUserId($userId);
         $this->setTags($tags);
-
-        if (! is_null($exif))
-            $this->setExif($exif);
+        $this->setExif($exif);
+        $this->setShares($shares);
 	}
+
 
     public function getId() {
         return $this->_id;
@@ -49,12 +52,14 @@ class Images extends BaseMapObject{
         $this->_id = $id;
     }
 
+
     public function getUrl() {
         return $this->url;
     }
     public function setUrl($url) {
         $this->url = $url;
     }
+
 
     public function getFilename() {
         return $this->filename;
@@ -63,12 +68,14 @@ class Images extends BaseMapObject{
         $this->filename = $filename;
     }
 
+
     public function getUserId() {
         return $this->userId;
     }
     public function setUserId($userId) {
         $this->userId = $userId;
     }
+
 
     public function getTags() {
         return $this->tags;
@@ -77,10 +84,19 @@ class Images extends BaseMapObject{
         $this->tags = $tags;
     }
 
+
     public function getExif($exif) {
         return $this->exif;
     }
     public function setExif($exif) {
         $this->exif = $exif;
+    }
+
+
+    public function getShares($shares) {
+        return $this->shares;
+    }
+    public function setShares($shares) {
+        $this->shares = $shares;
     }
 }

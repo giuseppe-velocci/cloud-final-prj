@@ -17,6 +17,9 @@ Select an image to upload:
     No images uploaded.
 
 <?php else :?>
+
+<?php var_dump($images); ?>
+
 <h2>Manage Your Images</h2>
 <form method="post" class="confirm-form" action="deletefile">
     <input class="confirm-input" type="submit" value="Delete" /> 

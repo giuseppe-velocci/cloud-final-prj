@@ -3,12 +3,15 @@
 
 <h3>Share with your friends: </h3>
 <?php if(! empty($imgDetails->shares)): ?>
-    <?php foreach ($imgDetails->shares AS $k => $v): ?>
+    <?php foreach ($imgDetails->shares AS $k => $v): 
+        $expires = substr($this->e($v), strpos($this->e($v), 'se=')+3, 10);
+        if(strtotime($expires) - time() > 0): ?>
         <p>
             <?php $link = $this->e($sharePath) . $this->e($k); ?>
             <b>Shereable link:</b> <a href="<?= $link ?>"><?= $link ?></a>
-            &nbsp;<b>Expires:</b> <?= substr($this->e($v), strpos($this->e($v), 'se=')+3, 10); ?>
+            &nbsp;<b>Expires:</b> <?= $expires; ?>
         </p>
+        <?php endif; ?>
     <?php endforeach; ?>
 <?php endif; ?>
 

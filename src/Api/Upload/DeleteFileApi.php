@@ -26,9 +26,7 @@ class DeleteFileApi extends AbsApi {
         $this->responseFactory = $responseFactory;
 
         try {
-			$this->cookieParam = Env::get('HTTP_COOKIE_PARAM');
-			$this->headers = Env::get('API_HEADERS');
-			$this->config  = Env::get('API_CONFIG');
+			parent::__construct();
 			
         } catch (\InvalidArgumentException $e) {
             die($e->getMessage());
@@ -100,6 +98,7 @@ class DeleteFileApi extends AbsApi {
         } catch (\Exception $e) {
             return $this->setResponse(500, $e->getMessage(), $headers);
         } 
-        return $this->setResponse(200, 'Images deleted!', $headers);
+        // 204 Successfully deleted
+        return $this->setResponse(204, 'Images deleted!', $headers);
     }
 }

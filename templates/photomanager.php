@@ -10,13 +10,13 @@ Select an image to upload:
 </form>
 <br/>
 <span style="color:<?= $this->e($msgStyle); ?>"><?= $this->e($message); ?></span>
-<br/>
+
 
 <!-- images management area -->
 <?php if (count($images) < 1) :?>
-    No images uploaded.
-
+    <br/>No images uploaded.
 <?php else :?>
+
 <h2>Manage Your Images</h2>
 <form method="post" class="confirm-form" action="deletefile">
     <input class="confirm-input" type="submit" value="Delete" /> 

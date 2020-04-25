@@ -64,7 +64,7 @@ class User extends BaseMapObject{
 		return $this->email;
 	}
 	public function setEmail($email) {
-		$this->email = $email;
+		$this->email = strtolower($email);
 	}
 
 	public function getPassword(): ?string {

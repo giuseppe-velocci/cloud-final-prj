@@ -3,6 +3,6 @@
 !*.template.env
 !*.encryptionKey.key
 .phpunit.result.cache
-!/uploads/
-/uploads/*.txt
+/uploads/
+!/uploads/*.txt
 /config/*.key

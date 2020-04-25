@@ -17,11 +17,13 @@ class Api2HtmlResponseMiddleware extends AbsResponseMiddleware implements IMiddl
 
     protected function middlewareAction (ResponseInterface $response) {
         try {
+            $headers = $response->getHeaders();
+            $headers['Content-Type'] = 'text/html';
             return $this->responseFactory->createResponse(
                 ResponseFactory::HTML,
                 $response->getStatusCode(), 
                 $response->getBody()->read(1024),
-                $response->getHeaders()
+                $headers
             );
         } catch (\InvalidArgumentException $e) {
             return $this->responseFactory->createResponse(

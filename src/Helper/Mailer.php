@@ -7,6 +7,9 @@ use App\Config\Env;
 
 class Mailer {
 
+    /**
+     * Throws exceptions --. try/catch
+     */
     public function mail(
         string $to , 
         string $subject, 
@@ -26,16 +29,16 @@ class Mailer {
   //      $email->addContent("text/plain", "and easy to do anywhere, even with PHP");
         $email->addContent("text/html", $message);
         $sendgrid = new \SendGrid(Env::get('AZURE_SENDGRID_KEY'));
-        try {
+   //     try {
             $response = $sendgrid->send($email);
             print $response->statusCode();
             print_r($response->headers());
             print $response->body();
             exit;
-
+/*
         } catch (Exception $e) {
             echo 'Caught exception: '. $e->getMessage() ."\n";
         }
-
+*/
     }
 }

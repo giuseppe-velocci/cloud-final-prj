@@ -46,7 +46,7 @@ class UploadFileApi extends AbsApi {
 			parent::__construct();
 			
             $this->folder = Env::get('UPLOAD_FOLDER');
-            $this->expiry = Env::get('AZURE_BLOB_SAS_EXPIRY');
+            $this->expiry = 'P'.Env::get('AZURE_BLOB_SAS_EXPIRY_YEARS').'Y';
             $this->blob = $blob;
             
 
@@ -97,13 +97,14 @@ class UploadFileApi extends AbsApi {
 
     /**
      * Create thumbnail
-     */
+     
     protected function createThumbnail(string $filepath) :string {
         $thumbnailName = ImgTransform::getThumbnailName($filepath);
         ImgTransform::thumbnail($filepath, $thumbnailName);
 
         return $thumbnailName;
     }
+    */
 
 
     /**
@@ -133,7 +134,7 @@ class UploadFileApi extends AbsApi {
 
             // extract the exif data..
             $exif = exif_read_data($filepath, "FILE,COMPUTED,ANY_TAG,IFD0,THUMBNAIL,COMMENT,EXIF", true);
-            $exif = $exif === false ? [] : $exif;       
+            $exif = $exif === false ? '' : json_encode($exif);       
    
             // store img on blob (with its thumbnail)
             $this->storeOnCloud($filepath);
@@ -146,7 +147,7 @@ class UploadFileApi extends AbsApi {
             );
 /*var_dump(__LINE__, $sasUrl, filter_var($sasUrl, FILTER_VALIDATE_URL));
 exit;
-  */          // perform computer vision and store given tags..
+  */        // perform computer vision and store given tags..
             $tags = [];
             $cvResponse = $this->computerVision->getAnalysis($sasUrl);
             foreach ($cvResponse['categories'] AS $v) {
@@ -154,13 +155,17 @@ exit;
                     $tags[] = $v['name'];
                 }
             }
+
+            $date = new \DateTime(date('Y-m-d'));
+            $date->add(new \DateInterval($this->expiry));
             
              // setup Image object
             $this->imagesDb->mapObj->setFilename(basename($filepath)); 
             $this->imagesDb->mapObj->setUrl($sasUrl); 
             $this->imagesDb->mapObj->setUserId($this->userDb->mapObj->getId());
-            $this->imagesDb->mapObj->setTags($tags); // tags?
-            $this->imagesDb->mapObj->setExif($exif); // exif?
+            $this->imagesDb->mapObj->setTags($tags);
+            $this->imagesDb->mapObj->setExif($exif);
+            $this->imagesDb->mapObj->setExpiry($date->format('Y-m-d'));
 
           // now store on db
             $this->imagesDb->setupQuery('insert');

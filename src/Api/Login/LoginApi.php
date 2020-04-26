@@ -77,7 +77,7 @@ class LoginApi extends AbsApi {
 		
 		return $this->setResponse(
 			200, 
-			['msg'=>"Successful login!", $this->cookieParam=>['user' => $user, 'token'=>$jwt, 'logindate' => date("Y-m-d H:i:s")]], 
+			['msg'=>"Successful login!", $this->cookieParam=>['user' => $user, 'token'=>$jwt]], 
 			$headers
 		);
 	}

@@ -13,11 +13,18 @@ use Psr\Http\Message\ServerRequestInterface;
 
 abstract class AbsApi {
     protected $responseFactory;
+    protected $headers;
 
     public function __construct() {
         $this->cookieParam = Env::get('HTTP_COOKIE_PARAM');
-        $this->headers = Env::get('API_HEADERS');
         $this->config  = Env::get('API_CONFIG');
+        $this->headers = [
+            'Access-Control-Allow-Origin' => 'http://localhost',
+            'Content-Type' => 'application/json; charset=UTF-8',
+            'Access-Control-Allow-Methods' => 'POST',
+            'Access-Control-Max-Age' => '3600',
+            'Access-Control-Allow-Headers' => 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With'
+        ];
     }
 
     /**

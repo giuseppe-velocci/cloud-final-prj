@@ -44,8 +44,9 @@ abstract class ViewController extends AbsController implements \App\Controller\I
             $params = $this->setViewParams($request);
 
         } catch (\Exception $e) {
+            $errCode = (int) $e->getCode()  < 200? 400 : (int) $e->getCode();
             return $this->view->setResponse(
-                sprintf('Errors/%d', (int) $e->getCode()), []
+                sprintf('Errors/%d', $errCode), []
             );
         }
         

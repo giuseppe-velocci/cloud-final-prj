@@ -99,6 +99,16 @@ abstract class BaseDbCollection {
         if ($cmd == 'update') 
             $doc = ['$set' => $doc];
 
+        if (! is_null($filter)) {
+            array_walk_recursive ($filter, function(&$item, $key) {
+                if (! is_array($item)) {
+                    $item = $this->sanitizer->clean($item);
+                    $key  = $this->sanitizer->clean($key);
+                }
+            });
+        }
+            
+
         $this->wQuery->addQuery($cmd, $doc, $filter);
     }
 

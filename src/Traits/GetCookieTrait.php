@@ -33,25 +33,4 @@ trait GetCookieTrait {
 
         return $cookies;
     }
-
-    /**
-     * Method to make a time-based decision whether to refresh sas or not
-     * @param array $cookies Result from $this->getCookies() method
-     */
-    protected function isLastLoginNearExpiry(array $cookies) {
-        $lastLogin = new \DateTime($cookies['logindate']);
-        $now = new \DateTime(date('Y-m-d H:i:s'));
-        $interval = (int) $lastLogin->diff($now)->format('%R%a');
-
-        if ($interval < 0) {
-            throw new \InvalidArgumentException('Invalid session.');
-        }
-
-        if ($interval < $this->expirationInDays / 2) {
-            return false;
-        }
-
-        return true;
-
-    }
 }

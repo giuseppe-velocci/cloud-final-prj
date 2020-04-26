@@ -1,6 +1,5 @@
 <?php 
-    if (! is_null($user))
-        $this->layout('Common/layout', ['title' => 'Photo Details', 'user' => $user]) 
+    $this->layout('Common/layout', ['title' => 'Photo Details', 'user' => $user]) 
 ?>
 <h1>Photo Details</h1>
 
@@ -37,12 +36,10 @@
 <br/> 
 <h3>Exif Data:</h3>
 <?php if(! empty($imgDetails->exif)): ?>
-    <?php $exifData = json_decode(json_encode($imgDetails->exif)); ?>
-    <?php foreach($exifData AS $key => $exif): 
-        $data = \App\Helper\ExifDataPrint::printExif($exif);
-    ?>
-        <b><?= $this->e($key); ?></b> 
-        <p><?= $data ?></p>
+<?php $exifData = \App\Helper\ExifDataHelper::exifString2Array($imgDetails->exif); ?>
+    <?php 
+    foreach($exifData AS $key => $exif): ?>
+        <p><?= $exif ?></p>
     <?php endforeach; ?>
 <?php else: ?>
     <p>No exif data detected.</p>

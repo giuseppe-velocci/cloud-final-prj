@@ -34,6 +34,8 @@ class PhotoDetails extends ViewController implements \App\Controller\IController
     }
 
     protected function setViewParams($request) :array{
+        $this->getResultMessage($request);
+
         $splitPath = explode('/', $request->getUri()->getPath());
         if (count($splitPath) < 2) {
             throw new \Exception('Invalid request.', 400);
@@ -47,9 +49,20 @@ class PhotoDetails extends ViewController implements \App\Controller\IController
             throw new \Exception('Not Found.', 404);
         }
 
+        if(! empty($imgDetails->shares)) {
+            foreach ($imgDetails->shares AS $k => $v){
+                $expires = substr($v, strpos($v, 'se=')+3, 10);
+                if (strtotime($expires) - time() < 0) {
+                    unset($imgDetails->shares[$k]);
+                } else {
+                    $imgDetails->shares->$k = $expires;
+                }
+            }
+        }
+
         $port = ':' . $request->getUri()->getPort() ?? ''; 
         $sharePath = $request->getUri()->getScheme().'://'.$request->getUri()->getHost() . $port . '/shared/';
-        $this->getResultMessage($request);
+        
         return [
             'sharePath'  => $sharePath,
             'imgDetails' => $imgDetails,

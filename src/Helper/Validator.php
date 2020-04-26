@@ -240,8 +240,8 @@ protected static function getValidationForField($name, $type, $value) {
      * @return void
      */
     protected static function validDate(string $name, $value) :void {
-        $elems = explode('-', $value);
-        if (count($elems) !== 3 || ! checkdate($elems[1], $elems[2], $elems[0])) {
+        $elems = explode('-', $value);     
+        if (count($elems) !== 3 || ! checkdate((int)$elems[1], (int)$elems[2], (int)$elems[0])) {
             throw new \InvalidArgumentException(self::stdErrorMessage($name));
         }
     }

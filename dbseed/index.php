@@ -124,6 +124,7 @@ $scripts = array_filter($scripts, function($x){
         return false;
     return $x != basename(__FILE__) && $x != '.' && $x != '..';
 });
+$scripts = $scripts ?? [];
 
 
 foreach ($scripts AS $s) {
@@ -156,9 +157,9 @@ foreach ($scripts AS $s) {
 
 // then add dbuser with a js script to be evaluated
 $script = file_get_contents('createUser.js');
-$script = str_replace('$db', $db, $script);
+$script = str_replace('$db',   $db,   $script);
 $script = str_replace('$user', $user, $script);
-$script = str_replace('$pwd', $pwd, $script);
+$script = str_replace('$pwd',  $pwd,  $script);
 
 echo $script;
 

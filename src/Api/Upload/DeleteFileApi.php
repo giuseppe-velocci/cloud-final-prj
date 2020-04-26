@@ -98,7 +98,7 @@ class DeleteFileApi extends AbsApi {
         } catch (\Exception $e) {
             return $this->setResponse(500, $e->getMessage(), $headers);
         } 
-        // 204 Successfully deleted
+        // 204 No Content
         return $this->setResponse(204, 'Images deleted!', $headers);
     }
 }

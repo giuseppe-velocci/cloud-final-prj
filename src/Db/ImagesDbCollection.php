@@ -10,7 +10,7 @@ use App\Config\Env;
 use App\Img\Blob;
 
 class ImagesDbCollection extends BaseDbCollection {
-    use \App\Traits\RefreshSasTrait;
+//    use \App\Traits\RefreshSasTrait;
 
     protected $collection = 'images';
     
@@ -32,28 +32,30 @@ class ImagesDbCollection extends BaseDbCollection {
      * Select all images related to current user
      * @param MongoDB\BSON\ObjectId $userId MongoDb Id for the user
      * @param array $search An array with search params
-     * @param bool  $refresh Tells if resources need to be refreshed in order to renew sas links. default is false
+     * @param bool  $minimumData Whether minimum amount of data should be returnd or not
      */
-    public function selectAllByUser(ObjectId $userId, array $search=[], bool $refresh=true) :array{ //, bool $refresh=true) :array{
+    public function selectAllByUser(ObjectId $userId, array $search=[], bool $minimumData=true) :array{ //, bool $refresh=true) :array{
         $filter  = ['userId' => $userId];
         $options = [
             'typeMap'=>'Images', 
-            'projection' => [
-                'tags' => 0,
-                'exif' => 0
-            ],
-            'sort' => ['>id' => -1]
+            'sort' => ['_id' => -1]
         ];
+        if ($minimumData) {
+            $options['projection'] = [
+                'shares' => 0,
+                'exif' => 0
+            ];
+        }
         if (count($search) > 0) {
             $filter = array_merge($filter, $search);
         }
 
         $cursor  = $this->select($filter, $options)->toArray();
-
+/*
         if ($refresh) {
             $cursor = $this->refreshSas($cursor, $this);
         }
-
+*/
         return $cursor;
     }
 

@@ -17,7 +17,9 @@ Select an image to upload:
     <br/>No images uploaded.
 <?php else :?>
 
+
 <h2>Manage Your Images</h2>
+
 <form method="post" class="confirm-form" action="deletefile">
     <input class="confirm-input" type="submit" value="Delete" /> 
     <br/><br/>
@@ -26,6 +28,7 @@ Select an image to upload:
         &nbsp;<a href="/photodetails/<?= str_replace('.', '%20', $this->e($img->filename)) ?>">
             <?= $this->e($img->filename) ?>
         </a> 
+        &nbsp;Uploaded: <?= date('Y-m-d', $this->e($img->_id->getTimestamp())) ?>
         <br/>
     <?php endforeach; ?>
 </form>

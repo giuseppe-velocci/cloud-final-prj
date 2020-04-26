@@ -14,6 +14,7 @@ class Images extends BaseMapObject{
     protected $tags;
     protected $exif;
     protected $shares; // guid param for sas url: "urlGuid" => "sasUrl"
+    protected $expiry;
 
     protected $required = ['url', 'userId'];
     protected $dataTypes = [
@@ -23,7 +24,8 @@ class Images extends BaseMapObject{
 		'userId'    => Validator::MONGOID,
 		'tags'      => Validator::NAME, 
         'exif'      => Validator::TEXT,
-        'shares'    => Validator::TEXT
+        'shares'    => Validator::TEXT,
+        'expiry'    => Validator::DATE
 	];
 
     public function __construct(
@@ -32,8 +34,9 @@ class Images extends BaseMapObject{
         string $filename = '',
         ObjectId $userId = null, 
         array $tags = [], 
-        array $exif = [],
-        array $shares = []
+        string $exif = '',
+        array $shares = [],
+        string $expiry = ''
     ){
 		$this->setId($id);
         $this->setUrl($url);
@@ -42,6 +45,7 @@ class Images extends BaseMapObject{
         $this->setTags($tags);
         $this->setExif($exif);
         $this->setShares($shares);
+        $this->setExpiry($expiry);
 	}
 
 
@@ -98,5 +102,13 @@ class Images extends BaseMapObject{
     }
     public function setShares($shares) {
         $this->shares = $shares;
+    }
+
+
+    public function getExpiry($expiry) {
+        return $this->expiry;
+    }
+    public function setExpiry($expiry) {
+        $this->expiry = $expiry;
     }
 }

@@ -25,37 +25,53 @@ Trait RefreshSasTrait {
      * @param string $sasField Name of the db field that stores the sas url (default is 'url')
      * @param string $filenameField Name of the db field that stores the file name (default is 'filename')
      */
-    protected function refreshSasForExpiredItems(
+    protected function refreshSas(
         array $data, 
         BaseDbCollection $collection, 
         string $sasField = 'url',
-        string $filenameField = 'filename',
-        string $expiryField = 'expiry'
-    ): void {        
+        string $filenameField = 'filename'
+    ): array {
+        try {
+            $expiry = Env::get('AZURE_BLOB_SAS_EXPIRY_YEARS');            
+        } catch (\InvalidArgumentException $e) {
+            die($e->getMessage());
+        }
+
+        $tomorrowDate = new \DateTime(date("Y-m-d"));
+        $tomorrowDate->add(new \DateInterval('P1D'));
+        $tomorrow = $tomorrowDate->format("Y-m-d");
+
         // cycle all data to look for urls that may expire
         foreach ($data AS $key => $item) {
-            $date = new \DateTime($item->{$expiryField});
-            $date->add(new \DateInterval($this->expiry));
-
-            //refresh url + expiry date
+            // if current value is not to expire tomorrow: continue
+            if (strpos($item->$sasField, "se=$tomorrow") === false) {
+                continue;
+            }
+/**/
+            // if a value that will expire tomorrow is found -> refresh url
             $item->$sasField = $this->blob->generateBlobDownloadLinkWithSAS($item->$filenameField, $expiry);
-            $item->$expiryField = $date->format('Y-m-d');
-
             $mapObjAttributes = array_keys(get_object_vars($item));
             
             // set all values to mapObj inside DbCollection so it will be ready for update
             foreach ($mapObjAttributes AS $attribute) {
                 $setter = sprintf("set%s", ucfirst(str_replace('_', '', $attribute)));
                 $collection->mapObj->{$setter}($item->{$attribute});
-// var_dump($setter, $item->{$attribute});
+                var_dump($setter, $item->{$attribute});
             }
 
             // setup update from id
             $collection->setupQuery('update', ['_id' => $collection->mapObj->getId()]);
+            $data[$key]->$sasField = $item->$sasField; // replace the old sas with the new on in data
         }
 
-        if ($collection->executeQueries() === false){
-            throw new \Exception("Db query error.");
+        try {
+            if ($collection->executeQueries() === false){
+                // .. throw error
+            }
+        } catch (\InvalidArgumentexception $e) {
+            //.. do nothing since no queries were added
         }
+        
+        return $data;
     }
 }

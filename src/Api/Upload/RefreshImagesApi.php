@@ -71,7 +71,7 @@ var_dump($date, $search, $imagesToRefresh);
 exit; 
 */      
             if (count($imagesToRefresh))
-                $this->refreshSasForExpiredItems($imagesToRefresh, $this->imagesDb);
+                $this->refreshSasForExpiredItems($imagesToRefresh, $this->imagesDb, $this->expiry);
 
         // app errors
         } catch (\InvalidArgumentException $e) {

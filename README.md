@@ -25,7 +25,7 @@ This project will also make use of SimpleMVC Framework from Enrico Zimuel, which
 
 - From */config* folder make a copy of *config.template.env* and rename it *config.env*. Then replace the palceholder values with those that suite your environment (please do not change the COOKIES_TO_ENCRYPT parameter).
 
-- Then from your terminal run the command `php dbseed/index.php` to instance mock data and create the db user for the application (further details about this operation can be found in */dbseed/README.md*).
+- Then from your terminal run the command `php dbseed/index.php` to create the db user for the application (further details about this operation can be found in */dbseed/README.md*).
 
 - Start a webserver with */public* folder as the root folder for the application.
 

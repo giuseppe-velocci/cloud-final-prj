@@ -28,6 +28,7 @@ Trait RefreshSasTrait {
     protected function refreshSasForExpiredItems(
         array $data, 
         BaseDbCollection $collection, 
+        string $expiry,
         string $sasField = 'url',
         string $filenameField = 'filename',
         string $expiryField = 'expiry'
@@ -35,7 +36,7 @@ Trait RefreshSasTrait {
         // cycle all data to look for urls that may expire
         foreach ($data AS $key => $item) {
             $date = new \DateTime($item->{$expiryField});
-            $date->add(new \DateInterval($this->expiry));
+            $date->add(new \DateInterval($expiry));
 
             //refresh url + expiry date
             $item->$sasField = $this->blob->generateBlobDownloadLinkWithSAS($item->$filenameField, $expiry);

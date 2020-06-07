@@ -1,7 +1,7 @@
 # cloud-final-prj
-Progetto finale del corso di Cloud Services (2019-2020) che prevede la realizzazione di un sito web per la gestione di un catalogo personale di foto.
+Final project for the Cloud Service class (2019-2020): a personal photos management website.
 
-This project will also make use of SimpleMVC Framework from Enrico Zimuel, which can be found here:
+This project will also make use of SimpleMVC Framework by Enrico Zimuel, which can be found here:
 
 [SimpleMVC by E.Zimuel](https://github.com/ezimuel/SimpleMVC)
 
@@ -12,8 +12,8 @@ This project will also make use of SimpleMVC Framework from Enrico Zimuel, which
 - A mongodb (v4.2^) instance running on your local machine and php mongo extension enabled.
 
 **Prerequisites: Azure**
-- An existing Blob subscription with a container (with access to get connection details)
-- An exisiting Computer Vision subscription (with access to get connection details)
+- An existing Blob subscription with a container (with enough permissions to get connection details)
+- An exisiting Computer Vision subscription (with enough permissions to get connection details)
 
 
 **Instructions**

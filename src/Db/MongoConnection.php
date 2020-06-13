@@ -54,48 +54,4 @@ class MongoConnection {
 
         return $connection;
     }
-
-
-    /*
-    public function setCurrentDb(string $db) : \MongoDB\Driver\Manager {
-        try {
-            // create db with a use cmd
-//            new \MongoDB\Driver\Command(['use ' + $db]);
-echo $this->connectionString."\n";
-
-            $connection = new \MongoDB\Driver\Manager($this->connectionString);
-var_dump($connection);
-//            $dbLink = $connection->$db;
-        } catch (\MongoDB\Driver\Exception\ConnectionException $e) { // check exception type
-            throw $e;
-        }
-        return $connection; //$dbLink;
-    }
-
-    public function setCurrentCollection(string $db, string $collection) : \MongoDB\Driver\Manager {
-        try {
-            $connection = new \MongoDB\Driver\Manager($this->connectionString);
-            $dbLink = $connection->$db->$collection;
-        } catch (\MongoDB\Driver\Exception\ConnectionException $e) { // check exception type
-            throw $e;
-        }
-        return $dbLink;
-    }
- */
-    // https://stackoverflow.com/questions/53019846/undefined-property-mongodb-driver-managerdb
-
-/*
-// Manager Class
-$manager = new MongoDB\Driver\Manager($connection);
-
-// Query Class
-$query = new MongoDB\Driver\Query(array('age' => 30));
-
-// Output of the executeQuery will be object of MongoDB\Driver\Cursor class
-$cursor = $manager->executeQuery('testDb.testColl', $query);
-
-// Convert cursor to Array and print result
-print_r($cursor->toArray());
-*/
 }
-// https://stackoverflow.com/questions/40971613/class-mongodb-client-not-found-mongodb-extension-installed

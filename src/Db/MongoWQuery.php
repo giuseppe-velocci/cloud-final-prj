@@ -107,7 +107,6 @@ class MongoWQuery {
     
 
     public function select(Query $query, string $collection) :CursorInterface  {
-// var_dump($query);
         try {
             return $this->connection->executeQuery(
                 sprintf('%s.%s', $this->db, $collection),
@@ -121,6 +120,5 @@ class MongoWQuery {
             printf("Driver error: %s\n", $e->getMessage());
             exit;
         }
-        
     }
 }

@@ -69,7 +69,6 @@ class Login extends AbsController implements \App\Controller\IController {
             $landing = 'login';
            
         } else {
-        //   $response = $this->setLoginCookies($response);
            $landing = 'dashboard';
 
             // refresh imagesSAS (if needed)

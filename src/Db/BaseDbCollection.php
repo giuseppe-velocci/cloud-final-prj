@@ -107,8 +107,7 @@ abstract class BaseDbCollection {
                 }
             });
         }
-            
-
+        
         $this->wQuery->addQuery($cmd, $doc, $filter);
     }
 

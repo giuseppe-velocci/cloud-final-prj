@@ -51,11 +51,6 @@ class ImagesDbCollection extends BaseDbCollection {
         }
 
         $cursor  = $this->select($filter, $options)->toArray();
-/*
-        if ($refresh) {
-            $cursor = $this->refreshSas($cursor, $this);
-        }
-*/
         return $cursor;
     }
 

@@ -19,7 +19,7 @@ abstract class AbsApi {
         $this->cookieParam = Env::get('HTTP_COOKIE_PARAM');
         $this->config  = Env::get('API_CONFIG');
         $this->headers = [
-            'Access-Control-Allow-Origin' => 'http://localhost',
+            'Access-Control-Allow-Origin' => Env::get('ALLOW_ORIGIN'),
             'Content-Type' => 'application/json; charset=UTF-8',
             'Access-Control-Allow-Methods' => 'POST',
             'Access-Control-Max-Age' => '3600',

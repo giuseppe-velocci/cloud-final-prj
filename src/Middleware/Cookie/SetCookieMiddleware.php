@@ -36,7 +36,6 @@ class SetCookieMiddleware extends AbsResponseMiddleware implements IMiddleware{
         $body = $response->getBody();
         $json = json_decode($body->read(1024), true);
    
-
         if ($json === null && json_last_error() !== JSON_ERROR_NONE) {
             return $response;
         }
@@ -55,8 +54,6 @@ class SetCookieMiddleware extends AbsResponseMiddleware implements IMiddleware{
                 );
             }
         }
-// var_dump('cookie');
-// var_dump($body->read(1024));
         return $response;
     }
 }

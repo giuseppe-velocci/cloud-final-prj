@@ -48,7 +48,6 @@ Trait RefreshSasTrait {
             foreach ($mapObjAttributes AS $attribute) {
                 $setter = sprintf("set%s", ucfirst(str_replace('_', '', $attribute)));
                 $collection->mapObj->{$setter}($item->{$attribute});
-// var_dump($setter, $item->{$attribute});
             }
 
             // setup update from id

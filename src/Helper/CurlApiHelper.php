@@ -21,10 +21,7 @@ class CurlApiHelper {
      */
     public static function get(string $url, array $queryParams, string $jwt='') {
         $ch = curl_init();
-
         curl_setopt($ch, CURLOPT_URL, $url . http_build_query($queryParams));
-//        curl_setopt($ch, CURLOPT_HEADER, 0);
-
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $headers = self::setHeaders($jwt);

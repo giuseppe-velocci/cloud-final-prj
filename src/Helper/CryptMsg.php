@@ -64,7 +64,6 @@ class CryptMsg {
 
     public function decrypt(string $msg, string $nonce): string {
         $value = sodium_crypto_secretbox_open($msg, $nonce, self::$key);
-        // error throwing?
         if ($value === false){
             return '';
         }

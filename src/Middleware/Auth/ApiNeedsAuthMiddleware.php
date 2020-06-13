@@ -26,9 +26,7 @@ class ApiNeedsAuthMiddleware extends AbsRequestMiddleware implements IMiddleware
     protected function middlewareAction (ServerRequestInterface $request) {
         $headers = $request->getHeaders();
         $cookies = $request->getCookieParams();
-/*
 
-*/
         if (! isset($cookies['token']) && ! array_key_exists('Authorization', $headers)) {
             header('Location: /error401');
             exit;

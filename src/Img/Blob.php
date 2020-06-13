@@ -137,9 +137,6 @@ class Blob {
         $blobClientWithSAS = BlobRestProxy::createBlobService(
             $connectionStringWithSAS
         );
-
-        // return $blobClientWithSAS;
-
         // We can download the blob with PHP Client Library
         // downloadBlobSample($blobClientWithSAS);
 
@@ -153,14 +150,5 @@ class Blob {
         );
 
         return $blobUrlWithSAS;
-/* 
-        file_put_contents("outputBySAS.txt", fopen($blobUrlWithSAS, 'r'));
-
-        return $blobUrlWithSAS;
-        */
     }
-
-
-
-
 }

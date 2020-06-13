@@ -54,7 +54,7 @@ class RefreshImagesApi extends AbsApi {
         try {
             // find current user (to validate he is the owner of the files)
             if (! $this->userDb->findByEmail($data['email'])) {
-                throw new \InvalidArgumentException('Wrong data provided.');
+                return $this->setResponse(400, 'Wrong data provided.', $headers);
             }
 
             $date = new \DateTime(date("Y-m-d"));
@@ -66,17 +66,10 @@ class RefreshImagesApi extends AbsApi {
                 $this->userDb->mapObj->getId(),
                 $search
             );
-/*
-var_dump($date, $search, $imagesToRefresh);
-exit; 
-*/      
             if (count($imagesToRefresh))
                 $this->refreshSasForExpiredItems($imagesToRefresh, $this->imagesDb, $this->expiry);
 
         // app errors
-        } catch (\InvalidArgumentException $e) {
-            return $this->setResponse(400, $e->getMessage(), $headers);
-
         } catch (\Exception $e) {
             return $this->setResponse(500, $e->getMessage(), $headers);
         } 

@@ -61,10 +61,7 @@ class GetImageApi extends AbsApi {
         if (isset($get['refresh']) && $get['refresh'] == 'true') {
             $images = $this->refreshSas($images, $this);
         }
-/*
-var_dump($images);
-exit;
-*/
+        
         return $this->setResponse(200, json_encode($images), $headers);
     }
 

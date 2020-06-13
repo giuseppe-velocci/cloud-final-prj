@@ -52,25 +52,25 @@ class ShareImageApi extends AbsApi {
            
             // find current user (to validate he is the owner of the files)
             if (! $this->userDb->findByEmail($data['user'])) {
-                throw new \InvalidArgumentException('Wrong data provided.');
+                return $this->getReturnResponse(400, 'Wrong data provided.', $headers, $data);
             }
 
             unset($data['user']);
 
             // block if date less than today
             if (strtotime($data['expiry']) - time() <= 0) {
-                throw new \InvalidArgumentException('The given date must be later than today.');
+                return $this->getReturnResponse(400, 'The given date must be later than today.', $headers, $data);
             }
 
             // find the image & verify that this user has privileges to delete it
             $image = $this->imagesDb->select(['filename' => $data['filename']])->toArray();
 
             if (count($image) < 1 || is_null($image[0]->_id)) {
-                throw new \InvalidArgumentException('Cannot find the given image to be deleted.');
+                return $this->getReturnResponse(400, 'Cannot find the given image to be deleted.', $headers, $data);
             }
 
             if ($image[0]->userId->__toString() != $this->userDb->mapObj->getId()->__toString()) {
-                throw new \InvalidArgumentException('User does not have enough privilges to perform this action.');
+                return $this->getReturnResponse(400, 'User does not have enough privilges to perform this action.', $headers, $data);
             }
 
             $imageShares =  is_array($image[0]->shares) ?  $image[0]->shares : get_object_vars($image[0]->shares);
@@ -80,8 +80,8 @@ class ShareImageApi extends AbsApi {
             });
 
             if (count($isFound) > 0) {
-                    throw new \InvalidArgumentException('Another shareable link with the same date exists.');
-                }
+                return $this->getReturnResponse(400, 'Another shareable link with the same date exists.', $headers, $data);
+            }
 
             $imageShares[$this->guid->generate()] = 
                 $this->blob->generateBlobDownloadLinkWithSAS($image[0]->filename, $data['expiry'])
@@ -102,11 +102,7 @@ class ShareImageApi extends AbsApi {
                 return $this->setResponse(500, 'Unable to execute the required operation.', $headers);
             }
 
-
         // app errors
-        } catch (\InvalidArgumentException $e) {
-            $response = $this->setResponse(400, $e->getMessage(), $headers);
-
         } catch (\Exception $e) {
             $response = $this->setResponse(500, $e->getMessage(), $headers);
         }
@@ -115,6 +111,12 @@ class ShareImageApi extends AbsApi {
             $response = $this->setResponse(201, 'Image Shared!', $headers);
         }
 
+        return $response->withAddedHeader('Referer', $data['filename']);
+    }
+
+    // private response
+    private function getReturnResponse(int $status, string $message, $headers, $data) :ResponseInterface {
+        $response = $this->setResponse(400, $message, $headers);
         return $response->withAddedHeader('Referer', $data['filename']);
     }
 }

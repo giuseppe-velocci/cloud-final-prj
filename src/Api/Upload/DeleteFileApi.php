@@ -46,12 +46,12 @@ class DeleteFileApi extends AbsApi {
         // try block to delete images
         try {
             if (count($data) == 1) {
-                throw new \InvalidArgumentException('At least an image must be selected for deletion.');
+                return $this->setResponse(400, 'At least an image must be selected for deletion.', $headers);
             }    
 
             // find current user (to validate he is the owner of the files)
             if (! $this->userDb->findByEmail($data['user'])) {
-                throw new \InvalidArgumentException('Wrong data provided.');
+                return $this->setResponse(400, 'Wrong data provided.', $headers);
             }
 
             unset($data['user']);
@@ -63,11 +63,11 @@ class DeleteFileApi extends AbsApi {
                 $image = $this->imagesDb->select(['filename' => $v])->toArray();
 
                 if (count($image) < 1 || is_null($image[0]->_id)) {
-                    throw new \InvalidArgumentException('Cannot find the given image to be deleted.');
+                    return $this->setResponse(400, 'Cannot find the given image to be deleted.', $headers);
                 }
 
                 if ($image[0]->userId->__toString() != $this->userDb->mapObj->getId()->__toString()) {
-                    throw new \InvalidArgumentException('User does not have enough privilges to perform this action.');
+                    return $this->setResponse(400, 'User does not have enough privilges to perform this action', $headers);
                 }
                 // then delete from db AND from blob
                 $this->imagesDb->setupQuery('delete', ['_id' => $image[0]->_id]);
@@ -92,9 +92,6 @@ class DeleteFileApi extends AbsApi {
             return $this->setResponse(500, $e->getMessage(), $headers);
 
         // app errors
-        } catch (\InvalidArgumentException $e) {
-            return $this->setResponse(400, $e->getMessage(), $headers);
-
         } catch (\Exception $e) {
             return $this->setResponse(500, $e->getMessage(), $headers);
         } 
